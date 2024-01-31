@@ -44,7 +44,7 @@ export default function LoginForm() {
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     const userSignin = await signin({ data: values });
 
-    if (userSignin && userSignin.error) setError(error);
+    if (userSignin && userSignin.error) setError(userSignin.error);
   }
 
   return (
