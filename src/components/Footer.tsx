@@ -78,30 +78,18 @@ export default function Footer() {
           <h1 className="text-xl font-bold">Meie asukoht</h1>
           <p>Mustamäe tee 3a, Tallinn, Estonia</p>
           <iframe
-            width="500"
-            height="250"
-            style={{ border: "0" }}
+            src="https://snazzymaps.com/embed/575213"
+            width="100%"
+            height="600px"
+            className="border-none"
             loading="lazy"
-            src="https://www.google.com/maps/embed/v1/place?q=place_id:ChIJ8WlCxYmUkkYR1is8tBgF2rI&key=AIzaSyDT4qIK_Mg3s-uLCRnM6rR8X0JQXtU-ySI"
-            className="w-72 md:w-96"
           ></iframe>
         </div>
       </div>
-      <div className="flex justify-between md:justify-start items-center w-full">
-        <Image
-          src="/logo.png"
-          width={80}
-          height={80}
-          alt="pitsakoht logo"
-          className="w-auto"
-        ></Image>
 
-        <div className="flex-grow"></div>
-
-        <div className="flex flex-col md:items-center w-full md:flex-grow-0">
-          <Link href="/privaatsuspoliitika">Privaatsuspoliitika</Link>
-          <p>© 2023 Pitsakoht | Kõik õigused kaitstud</p>
-        </div>
+      <div className="flex flex-col md:items-center w-full md:flex-grow-0">
+        <Link href="/privaatsuspoliitika">Privaatsuspoliitika</Link>
+        <p>© 2023 Pitsakoht | Kõik õigused kaitstud</p>
       </div>
     </footer>
   );

@@ -15,36 +15,121 @@ enum Role {
   USER
 }
 
+enum TopCategory {
+  Pizza
+  Else
+}
+
+enum Sizes {
+  s
+  m
+  l
+}
+
+enum OrderStatus {
+  pending
+  processing
+  completed
+}
+
 
 model Item {
   id Int @id @default(autoincrement())
   name String
   image String
-  incredients Incredients[]
-  sizes       Size[]
+  incredients ItemIngredient[]
+  addons ItemAddon[]
+  sizes Size[]
+  orders OrderItem[]
   categoryId Int @unique
   category Category @relation(fields: [categoryId], references: [id])
+  topCategory TopCategory
 }
 
 model Category {
   id Int @id @default(autoincrement())
   name String
-  icon String
   items Item[]
 }
 
-model Incredients {
+model Ingredient {
   id Int @id @default(autoincrement())
   name String
-  item Item[]
+  price Int
+  itemsAsIngredient ItemIngredient[]
+  itemsAsAddon ItemAddon[]
 }
+
+model ItemIngredient {
+  itemId Int
+  ingredientId Int
+  item Item @relation(fields: [itemId], references: [id])
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id])
+
+  @@id([itemId, ingredientId])
+}
+
+model ItemAddon {
+  itemId Int
+  ingredientId Int
+  item Item @relation(fields: [itemId], references: [id])
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id])
+  orderItemAddons OrderItemAddon[]
+
+  @@id([itemId, ingredientId])
+}
+
+
+
 
 model Size {
   id      Int    @id @default(autoincrement())
-  value   String
+  value   Sizes
+  price Int
   itemId  Int    
   item    Item   @relation(fields: [itemId], references: [id])
 }
+
+
+
+model Order {
+  id Int @id @default(autoincrement())
+  userId String?
+  user User? @relation(fields: [userId], references: [id])
+  email String?
+  name String?
+  phone String?
+  total Int
+  status OrderStatus
+  items    OrderItem[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model OrderItem {
+  id        Int      @id @default(autoincrement())
+  orderId Int
+  order Order @relation(fields: [orderId], references: [id])
+  itemId Int
+  item Item @relation(fields: [itemId], references: [id])
+  size Sizes?
+  quantity Int
+  addons OrderItemAddon[]
+  
+}
+
+model OrderItemAddon {
+  orderItemId Int
+  orderItem   OrderItem @relation(fields: [orderItemId], references: [id])
+  itemId Int
+  ingredientId Int
+  itemAddon   ItemAddon @relation(fields: [itemId, ingredientId], references: [itemId, ingredientId])
+
+  @@id([orderItemId, itemId, ingredientId])
+}
+
+
 
 model User {
   id       String    @id
@@ -54,6 +139,7 @@ model User {
   hashed_password String
   role     Role @default(USER)
   sessions Session[]
+  orders Order[]
 }
 
 model Session {

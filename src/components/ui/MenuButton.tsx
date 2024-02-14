@@ -4,7 +4,7 @@ import { MoveRight } from "lucide-react";
 
 type MenuButtonProps = {
   itemName: string;
-  itemIcon: React.ElementType;
+
   itemNumber: number;
   isActive: boolean;
   setActive: (active: string) => void;
@@ -12,7 +12,7 @@ type MenuButtonProps = {
 
 export default function MenuButton({
   itemName,
-  itemIcon: ItemIcon,
+
   itemNumber,
   isActive,
   setActive,
@@ -33,7 +33,6 @@ export default function MenuButton({
         <div
           className={`flex flex-row md:gap-2 justify-center w-full text-md ${activeText}`}
         >
-          <ItemIcon size={18} className="hidden md:block" />
           {itemName}
         </div>
         <MoveRight className="hidden md:block absolute right-3" size={20} />

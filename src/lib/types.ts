@@ -1,3 +1,5 @@
+import { ItemParams } from "@/components/ui/ItemCard";
+import { Ingredient, Size, Sizes } from "@prisma/client";
 import { z } from "zod";
 
 export const registerSchema = z.object({
@@ -32,3 +34,22 @@ export const codeSchema = z.object({
     message: "Kood on vähemalt 8 tähte",
   }),
 });
+
+export type AddonType = {
+  addonId: number;
+  addonName: string;
+  addonPrice: number;
+  addonCount: number;
+};
+
+export type CartItem = {
+  id: number;
+  item: ItemParams;
+  price: number;
+  quantity: number;
+  size: {
+    size: Sizes;
+    price: number;
+  };
+  addons: AddonType[];
+};

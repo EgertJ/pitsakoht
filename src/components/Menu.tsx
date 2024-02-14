@@ -1,25 +1,17 @@
 "use client";
 import React, { useState } from "react";
-import { CupSoda, PizzaIcon, Utensils } from "lucide-react";
 import MenuButton from "./ui/MenuButton";
 import ItemCard from "./ui/ItemCard";
 import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+import { getCategories } from "@/app/actions";
+import Link from "next/link";
 
 export default function Menu() {
-  const Menus = [
-    {
-      itemName: "Pitsad",
-      itemIcon: PizzaIcon,
-    },
-    {
-      itemName: "Joogid",
-      itemIcon: CupSoda,
-    },
-    {
-      itemName: "Pakkumised",
-      itemIcon: Utensils,
-    },
-  ];
+  const { data: categoryData } = useQuery({
+    queryKey: ["categories"],
+    queryFn: () => getCategories(),
+  });
 
   const [active, setActive] = useState<string>();
 
@@ -37,112 +29,63 @@ export default function Menu() {
         </p>
       </div>
       <div className="flex gap-2 flex-wrap justify-center md:justify-normal py-8 sticky top-0 z-50 bg-white ">
-        {Menus.map((menuItem, index) => (
-          <MenuButton
-            key={menuItem.itemName}
-            itemNumber={index + 1}
-            itemIcon={menuItem.itemIcon}
-            isActive={active === menuItem.itemName}
-            itemName={menuItem.itemName}
-            setActive={setActive}
-          ></MenuButton>
+        {categoryData?.categories?.map((menuItem, index) => (
+          <Link href={`#${menuItem.name}`} key={menuItem.name}>
+            <MenuButton
+              itemNumber={index + 1}
+              isActive={active === menuItem.name}
+              itemName={menuItem.name}
+              setActive={setActive}
+            ></MenuButton>
+          </Link>
         ))}
       </div>
-      <div className="flex justify-center md:justify-start">
-        <h1 className="font-bold text-2xl">Pitsad</h1>
-      </div>
-      <div className="grid md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-y-2 my-10 gap-x-10">
-        <motion.div
-          variants={variants}
-          initial="hidden"
-          whileInView={"enter"}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
-        >
-          <ItemCard></ItemCard>
-        </motion.div>
-        <motion.div
-          variants={variants}
-          initial="hidden"
-          whileInView={"enter"}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
-        >
-          <ItemCard></ItemCard>
-        </motion.div>
-        <motion.div
-          variants={variants}
-          initial="hidden"
-          whileInView={"enter"}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
-        >
-          <ItemCard></ItemCard>
-        </motion.div>
-        <motion.div
-          variants={variants}
-          initial="hidden"
-          whileInView={"enter"}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
-        >
-          <ItemCard></ItemCard>
-        </motion.div>
-        <motion.div
-          variants={variants}
-          initial="hidden"
-          whileInView={"enter"}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
-        >
-          <ItemCard></ItemCard>
-        </motion.div>
-        <motion.div
-          variants={variants}
-          initial="hidden"
-          whileInView={"enter"}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
-        >
-          <ItemCard></ItemCard>
-        </motion.div>
-        <motion.div
-          variants={variants}
-          initial="hidden"
-          whileInView={"enter"}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
-        >
-          <ItemCard></ItemCard>
-        </motion.div>
-        <motion.div
-          variants={variants}
-          initial="hidden"
-          whileInView={"enter"}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
-        >
-          <ItemCard></ItemCard>
-        </motion.div>
-        <motion.div
-          variants={variants}
-          initial="hidden"
-          whileInView={"enter"}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
-        >
-          <ItemCard></ItemCard>
-        </motion.div>
-        <motion.div
-          variants={variants}
-          initial="hidden"
-          whileInView={"enter"}
-          viewport={{ once: true }}
-          transition={{ delay: 0.2 }}
-        >
-          <ItemCard></ItemCard>
-        </motion.div>
-      </div>
+      {categoryData?.categories?.map((menuItem, index) => {
+        return (
+          <div key={menuItem.id} id={menuItem.name}>
+            <div className="flex justify-center md:justify-start">
+              <h1 className="font-bold text-2xl">{menuItem.name}</h1>
+            </div>
+            {menuItem.items.map((item, index) => {
+              item.sizes.sort((a, b) => a.price - b.price);
+
+              return (
+                <div
+                  className="grid md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-y-2 my-10 gap-x-10"
+                  key={item.id}
+                >
+                  <motion.div
+                    variants={variants}
+                    initial="hidden"
+                    whileInView={"enter"}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <ItemCard
+                      itemId={item.id}
+                      itemName={item.name}
+                      itemImage={item.image}
+                      itemPrice={item.sizes[0].price}
+                      itemIngredients={item.incredients.map(
+                        (item) => item.ingredient.name
+                      )}
+                      itemAddons={item.addons.map((item) => ({
+                        id: item.ingredient.id,
+                        name: item.ingredient.name,
+                        price: item.ingredient.price,
+                      }))}
+                      itemSizes={item.sizes.map((item) => ({
+                        size: item.value,
+                        price: item.price,
+                      }))}
+                    ></ItemCard>
+                  </motion.div>
+                </div>
+              );
+            })}
+          </div>
+        );
+      })}
     </div>
   );
 }

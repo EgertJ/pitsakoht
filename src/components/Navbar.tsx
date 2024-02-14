@@ -8,6 +8,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const user = useAuth();
 
   const toggleMenu = () => {
@@ -38,26 +39,42 @@ export default function Navbar() {
         </div>
 
         <div className={`md:flex gap-10 hidden `}>
-          <Link href="/" className="hover:bg-gray-500 rounded-md p-4">
+          <Link
+            href="/"
+            className="hover:border-b-primary hover:border-b-2 border-b-2 border-b-gray-100 p-4"
+          >
             Avaleht
           </Link>
-          <Link href="/kontakt" className="hover:bg-gray-500 rounded-md p-4">
+          <Link
+            href="/kontakt"
+            className="hover:border-b-primary hover:border-b-2 border-b-2 border-b-gray-100 p-4"
+          >
             Kontakt
           </Link>
 
-          <Link href="/minu-konto" className="hover:bg-gray-500 rounded-md p-4">
+          <Link
+            href="/minu-konto"
+            className="hover:border-b-primary hover:border-b-2 border-b-2 border-b-gray-100 p-4"
+          >
             Minu konto
           </Link>
-          <ShoppingCart className="flex md:p-4 hover:bg-gray-500 rounded-md" />
+          <ShoppingCart
+            className="hover:border-b-primary hover:border-b-2 border-b-2 border-b-gray-100 bg-gray-100 text-md hover:bg-gray-100 rounded-none h-full p-4"
+            icon={false}
+          />
+          {user && <div>{user.user?.email}</div>}
         </div>
       </nav>
 
       {isMenuOpen && (
-        <div className="md:hidden flex flex-col gap-4 pt-4">
+        <div className="md:hidden flex flex-col gap-4 pt-4  items-center">
           <Link href="/">Avaleht</Link>
           <Link href="/kontakt">Kontakt</Link>
           <Link href="/minu-konto">Minu konto</Link>
-          <ShoppingCart className="flex md:p-4" />
+          <ShoppingCart
+            className="text-md hover:bg-gray-100 bg-gray-100 rounded-none h-full p-0"
+            icon={false}
+          />
         </div>
       )}
     </div>

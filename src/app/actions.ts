@@ -9,34 +9,78 @@ import { redirect } from "next/navigation";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
 
+import type { Session, User } from "lucia";
+
 import { loginSchema, registerSchema, codeSchema } from "@/lib/types";
 
-export const getUser = cache(async () => {
-  const sessionId = cookies().get(lucia.sessionCookieName)?.value ?? null;
-  if (!sessionId) return null;
-  const { user, session } = await lucia.validateSession(sessionId);
+export async function getCategories() {
   try {
-    if (session && session.fresh) {
-      const sessionCookie = lucia.createSessionCookie(session.id);
-      cookies().set(
-        sessionCookie.name,
-        sessionCookie.value,
-        sessionCookie.attributes
-      );
-    }
-    if (!session) {
-      const sessionCookie = lucia.createBlankSessionCookie();
-      cookies().set(
-        sessionCookie.name,
-        sessionCookie.value,
-        sessionCookie.attributes
-      );
-    }
+    const categories = await prisma.category.findMany({
+      include: {
+        items: {
+          include: {
+            sizes: true,
+            incredients: {
+              include: {
+                ingredient: true,
+              },
+            },
+            addons: {
+              include: {
+                ingredient: true,
+              },
+            },
+          },
+        },
+      },
+    });
+    return { categories };
   } catch (error) {
-    return null;
+    return { error: error };
   }
-  return user;
-});
+}
+
+export async function getItems() {
+  try {
+    const items = await prisma.item.findMany();
+    return { items };
+  } catch (error) {
+    return { error: error };
+  }
+}
+
+export const getUser = cache(
+  async (): Promise<
+    { user: User; session: Session } | { user: null; session: null }
+  > => {
+    const sessionId = cookies().get(lucia.sessionCookieName)?.value ?? null;
+    if (!sessionId)
+      return {
+        user: null,
+        session: null,
+      };
+    const result = await lucia.validateSession(sessionId);
+    try {
+      if (result.session && result.session.fresh) {
+        const sessionCookie = lucia.createSessionCookie(result.session.id);
+        cookies().set(
+          sessionCookie.name,
+          sessionCookie.value,
+          sessionCookie.attributes
+        );
+      }
+      if (!result.session) {
+        const sessionCookie = lucia.createBlankSessionCookie();
+        cookies().set(
+          sessionCookie.name,
+          sessionCookie.value,
+          sessionCookie.attributes
+        );
+      }
+    } catch {}
+    return result;
+  }
+);
 
 export async function signup({
   data,
@@ -161,7 +205,7 @@ export async function verifyEmailToken({
   if (!result.success) return { error: "Vale kood!" };
 
   const databaseCode = await prisma.email_verification_code.findFirst({
-    where: { user_id: user.id },
+    where: { user_id: user.user?.id },
   });
 
   if (databaseCode) {
@@ -176,20 +220,20 @@ export async function verifyEmailToken({
   if (!isWithinExpirationDate(databaseCode.expires_at)) {
     return { error: "Kood on aegunud!" };
   }
-  if (!user || user.email !== databaseCode.email) {
+  if (!user || user.user?.email !== databaseCode.email) {
     console.log("C");
     return { error: "Tekkis tõrge! Proovige uuesti!" };
   }
 
-  await lucia.invalidateUserSessions(user.id);
+  await lucia.invalidateUserSessions(user.user?.id);
   await prisma.user.update({
-    where: { id: user.id },
+    where: { id: user.user?.id },
     data: {
       email_verified: true,
     },
   });
 
-  const session = await lucia.createSession(user.id, {});
+  const session = await lucia.createSession(user.user?.id, {});
   const sessionCookie = lucia.createSessionCookie(session.id);
 
   cookies().set(
