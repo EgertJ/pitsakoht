@@ -1,5 +1,5 @@
 import { ItemParams } from "@/components/ui/ItemCard";
-import { Ingredient, Size, Sizes } from "@prisma/client";
+import { Ingredient, OrderStatus, Size, Sizes } from "@prisma/client";
 import { z } from "zod";
 
 export const registerSchema = z.object({
@@ -47,9 +47,21 @@ export type CartItem = {
   item: ItemParams;
   price: number;
   quantity: number;
-  size: {
-    size: Sizes;
-    price: number;
-  };
+  size:
+    | {
+        size: Sizes;
+        price: number;
+      }
+    | undefined;
   addons: AddonType[];
+};
+
+export type OrderType = {
+  userId: string | null;
+  email: string | null;
+  name: string | null;
+  phone: string | null;
+  total: number;
+  status: OrderStatus;
+  items: CartItem[];
 };

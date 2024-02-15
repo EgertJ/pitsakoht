@@ -59,6 +59,7 @@ async function main() {
       image: "/Hawaii.jpg",
       categoryId: 1,
       topCategory: "Pizza",
+      price: 1040,
       incredients: {
         create: [
           { ingredientId: 6 },
@@ -113,6 +114,15 @@ async function main() {
           { value: "m", price: 1040 + 150 },
         ],
       },
+    },
+  });
+
+  const drink = await prisma.item.create({
+    data: {
+      name: "Coca-cola 0.5L",
+      categoryId: 3,
+      topCategory: "Else",
+      price: 250,
     },
   });
 }

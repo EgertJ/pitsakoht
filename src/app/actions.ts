@@ -8,10 +8,19 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
+import { TimeSpan, createDate, isWithinExpirationDate } from "oslo";
+import { generateRandomString, alphabet } from "oslo/crypto";
+import { cache } from "react";
+import { ActionResult } from "next/dist/server/app-render/types";
 
 import type { Session, User } from "lucia";
 
-import { loginSchema, registerSchema, codeSchema } from "@/lib/types";
+import {
+  loginSchema,
+  registerSchema,
+  codeSchema,
+  OrderType,
+} from "@/lib/types";
 
 export async function getCategories() {
   try {
@@ -167,9 +176,25 @@ export async function signin({ data }: { data: z.infer<typeof loginSchema> }) {
   return redirect("/");
 }
 
-import { TimeSpan, createDate, isWithinExpirationDate } from "oslo";
-import { generateRandomString, alphabet } from "oslo/crypto";
-import { cache } from "react";
+export async function logout(): Promise<ActionResult> {
+  const { session } = await getUser();
+
+  if (!session) {
+    return {
+      error: "Ei ole lubatud!",
+    };
+  }
+
+  await lucia.invalidateSession(session.id);
+
+  const sessionCookie = lucia.createBlankSessionCookie();
+  cookies().set(
+    sessionCookie.name,
+    sessionCookie.value,
+    sessionCookie.attributes
+  );
+  return redirect("/");
+}
 
 export async function generateEmailVerificationCode(
   userId: string,
@@ -221,7 +246,6 @@ export async function verifyEmailToken({
     return { error: "Kood on aegunud!" };
   }
   if (!user || user.user?.email !== databaseCode.email) {
-    console.log("C");
     return { error: "Tekkis tõrge! Proovige uuesti!" };
   }
 
@@ -243,4 +267,55 @@ export async function verifyEmailToken({
   );
 
   return redirect("/");
+}
+
+export async function createOrder(order: OrderType) {
+  if (order.userId !== null || (!order.email && !order.name && !order.phone)) {
+    return { error: "Viga tellija leidmisest, palun proovige uuesti." };
+  }
+  let orderId = null;
+
+  try {
+    const newOrder = await prisma.order.create({
+      data: {
+        id: crypto.randomUUID(),
+        userId: order.userId,
+        email: order.email,
+        name: order.name,
+        phone: order.phone,
+        total: order.total,
+        status: order.status,
+        items: {
+          create: order.items.map((item) => ({
+            itemId: item.item.itemId,
+            size: item.size?.size,
+            quantity: item.quantity,
+            addons: {
+              create: item.addons.map((addon) => ({
+                itemId: addon.addonId,
+                ingredientId: addon.addonCount,
+              })),
+            },
+          })),
+        },
+      },
+    });
+
+    orderId = newOrder.id;
+  } catch (error) {
+    return { error: "Ostu sooritamisel tekkis viga. Proovige uuesti." };
+  }
+
+  if (!orderId)
+    return { error: "Ostu sooritamisel tekkis viga. Proovige uuesti." };
+  return redirect(`/tellimus/${orderId}`);
+}
+
+export async function getOrder(orderId: string) {
+  try {
+    const order = await prisma.order.findFirst({ where: { id: orderId } });
+    return { data: order };
+  } catch (error) {
+    return { error: "Ostu leidmisel tekkis viga. Proovige uuesti." };
+  }
 }

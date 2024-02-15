@@ -8,7 +8,7 @@ import { getCategories } from "@/app/actions";
 import Link from "next/link";
 
 export default function Menu() {
-  const { data: categoryData } = useQuery({
+  const { data: categoryData, error: categoryError } = useQuery({
     queryKey: ["categories"],
     queryFn: () => getCategories(),
   });
@@ -62,10 +62,11 @@ export default function Menu() {
                     transition={{ delay: 0.2 }}
                   >
                     <ItemCard
+                      itemCategory={item.topCategory}
                       itemId={item.id}
                       itemName={item.name}
                       itemImage={item.image}
-                      itemPrice={item.sizes[0].price}
+                      itemPrice={item.price}
                       itemIngredients={item.incredients.map(
                         (item) => item.ingredient.name
                       )}

@@ -36,7 +36,9 @@ enum OrderStatus {
 model Item {
   id Int @id @default(autoincrement())
   name String
-  image String
+  image String?
+  price Int
+  discountPrice Int?
   incredients ItemIngredient[]
   addons ItemAddon[]
   sizes Size[]
@@ -93,7 +95,7 @@ model Size {
 
 
 model Order {
-  id Int @id @default(autoincrement())
+  id String @id
   userId String?
   user User? @relation(fields: [userId], references: [id])
   email String?
@@ -109,7 +111,7 @@ model Order {
 
 model OrderItem {
   id        Int      @id @default(autoincrement())
-  orderId Int
+  orderId String
   order Order @relation(fields: [orderId], references: [id])
   itemId Int
   item Item @relation(fields: [itemId], references: [id])

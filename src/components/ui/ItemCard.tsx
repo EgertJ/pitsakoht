@@ -7,12 +7,15 @@ import {
 } from "@/components/ui/card";
 import Image from "next/image";
 import PizzaMaking from "../PizzaMaking";
-import { Sizes } from "@prisma/client";
+import { Sizes, TopCategory } from "@prisma/client";
+import ButtonWithCounter from "./ButtonWithCounter";
+import AddToCart from "./AddToCart";
 
 export interface ItemParams {
+  itemCategory: TopCategory;
   itemId: number;
   itemName: string;
-  itemImage: string;
+  itemImage: string | null;
   itemIngredients: string[];
   itemPrice: number;
   itemAddons: {
@@ -30,13 +33,15 @@ export default function ItemCard(params: ItemParams) {
   return (
     <Card className="w-full h-full border-none">
       <CardHeader className="p-0 h-56 relative bg-gray-100">
-        <Image
-          src={params.itemImage}
-          fill={true}
-          alt={params.itemName}
-          className="object-cover"
-          sizes="(min-width: 768px) 50vw, 100vw"
-        ></Image>
+        {params.itemImage && (
+          <Image
+            src={params.itemImage}
+            fill={true}
+            alt={params.itemName}
+            className="object-cover"
+            sizes="(min-width: 768px) 50vw, 100vw"
+          ></Image>
+        )}
       </CardHeader>
       <CardContent>
         <div className="grid w-full gap-8 justify-start">
@@ -45,15 +50,19 @@ export default function ItemCard(params: ItemParams) {
         </div>
       </CardContent>
       <CardFooter className="justify-between">
-        <p className="font-bold">
-          Alates {(params.itemPrice / 100).toFixed(2)}€
-        </p>
-        <PizzaMaking
-          params={params}
-          cartItem={undefined}
-          triggerText="Vali"
-          buttonStyle="w-1/2"
-        />
+        <p className="font-bold">{(params.itemPrice / 100).toFixed(2)}€</p>
+        {params.itemCategory === "Pizza" && (
+          <PizzaMaking
+            params={params}
+            cartItem={undefined}
+            triggerText="Vali"
+            buttonStyle="w-1/2"
+          />
+        )}
+
+        {params.itemCategory === "Else" && (
+          <AddToCart item={params}></AddToCart>
+        )}
       </CardFooter>
     </Card>
   );

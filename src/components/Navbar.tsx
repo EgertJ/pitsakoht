@@ -1,19 +1,13 @@
-"use client";
-
 import Link from "next/link";
-import React, { useState } from "react";
+import React from "react";
 import Image from "next/image";
 import ShoppingCart from "./ShoppingCart";
-import { useAuth } from "@/hooks/useAuth";
+import MobileNav from "./MobileNav";
+import { getUser, logout } from "@/app/actions";
+import { Button } from "./ui/button";
 
-export default function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const user = useAuth();
-
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+export default async function Navbar() {
+  const { user } = await getUser();
 
   return (
     <div className="px-4 md:px-24 lg:px-52 py-6 border-b bg-gray-100">
@@ -28,14 +22,6 @@ export default function Navbar() {
               sizes="(max-width: 768px) 5rem, (max-width: 1024px) 5rem, 5rem"
             />
           </Link>
-        </div>
-
-        <div className="md:hidden">
-          <button onClick={toggleMenu}>
-            <span className="block w-6 h-0.5 bg-black mb-1"></span>
-            <span className="block w-6 h-0.5 bg-black mb-1"></span>
-            <span className="block w-6 h-0.5 bg-black"></span>
-          </button>
         </div>
 
         <div className={`md:flex gap-10 hidden `}>
@@ -62,21 +48,15 @@ export default function Navbar() {
             className="hover:border-b-primary hover:border-b-2 border-b-2 border-b-gray-100 bg-gray-100 text-md hover:bg-gray-100 rounded-none h-full p-4"
             icon={false}
           />
-          {user && <div>{user.user?.email}</div>}
+          {user && (
+            <form action={logout}>
+              <Button type="submit">Sign out</Button>
+            </form>
+          )}
         </div>
       </nav>
 
-      {isMenuOpen && (
-        <div className="md:hidden flex flex-col gap-4 pt-4  items-center">
-          <Link href="/">Avaleht</Link>
-          <Link href="/kontakt">Kontakt</Link>
-          <Link href="/minu-konto">Minu konto</Link>
-          <ShoppingCart
-            className="text-md hover:bg-gray-100 bg-gray-100 rounded-none h-full p-0"
-            icon={false}
-          />
-        </div>
-      )}
+      <MobileNav />
     </div>
   );
 }

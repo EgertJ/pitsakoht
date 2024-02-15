@@ -8,6 +8,7 @@ interface CartState {
   removeFromCart: (item: CartItem) => void;
   increaseQuantity: (item: CartItem, quantity: number) => void;
   decreaseQuantity: (item: CartItem) => void;
+  clearCart: () => void;
 }
 
 export const useCartStore = create<CartState>()(
@@ -30,6 +31,7 @@ export const useCartStore = create<CartState>()(
             return { cart: newCart };
           });
         },
+
         increaseQuantity: (item, quantity) => {
           const itemToIncrease = get().cart.findIndex((p) => p.id === item.id);
 
@@ -49,6 +51,11 @@ export const useCartStore = create<CartState>()(
               newCart.splice(itemToDecrease, 1);
             return { cart: newCart };
           });
+        },
+        clearCart: () => {
+          set(() => ({
+            cart: [],
+          }));
         },
       }),
       {

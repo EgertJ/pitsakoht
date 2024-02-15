@@ -1,9 +1,9 @@
 import LoginForm from "@/components/LoginForm";
 import React from "react";
-import { getUser } from "../actions";
+import { getUser } from "../../actions";
 import { redirect } from "next/navigation";
 
-export default function page() {
+export default function LogiSissePage() {
   return (
     <div className="px-3 md:px-24 lg:px-52 py-24">
       <div className="flex justify-center items-center">

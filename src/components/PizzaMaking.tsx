@@ -15,7 +15,7 @@ import ButtonWithCounter from "./ui/ButtonWithCounter";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ItemParams } from "./ui/ItemCard";
-import { FC, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Addon from "./ui/Addon";
 import { AddonType, CartItem } from "@/lib/types";
 import { Sizes } from "@prisma/client";
@@ -40,7 +40,13 @@ export default function PizzaMaking({
   const [selectedSize, setSelectedSize] = useState<{
     size: Sizes;
     price: number;
-  }>(cartItem ? cartItem.size : params.itemSizes[0]);
+  }>(
+    cartItem
+      ? cartItem.size
+        ? cartItem.size
+        : params.itemSizes[0]
+      : params.itemSizes[0]
+  );
 
   const [cart, addToCart, increaseQuantity, removeFromCart] = useCartStore(
     (state) => [
@@ -106,15 +112,13 @@ export default function PizzaMaking({
     const existingItemIndex = cart.findIndex(
       (item) =>
         item.item.itemId === params.itemId &&
-        item.size.size === selectedSize.size &&
+        item.size?.size === selectedSize.size &&
         JSON.stringify(item.addons) === JSON.stringify(selectedAddons)
     );
 
     if (existingItemIndex !== -1 && !cartItem) {
-      // If the same combination exists, update the quantity
       increaseQuantity(cart[existingItemIndex], count);
     } else {
-      // If the combination doesn't exist, add a new item to the cart
       const item: CartItem = {
         id: Math.floor(Math.random() * 1000000) + 1,
         item: params,
@@ -146,13 +150,15 @@ export default function PizzaMaking({
           <DialogTitle>
             <div className="relative h-60 w-full overflow-hidden ">
               <div className="w-full h-full relative">
-                <Image
-                  src={params.itemImage}
-                  alt={params.itemName}
-                  fill={true}
-                  className="object-contain"
-                  sizes="(max-width: 768px) 5rem, (max-width: 1024px) 5rem, 5rem"
-                />
+                {params.itemImage && (
+                  <Image
+                    src={params.itemImage}
+                    alt={params.itemName}
+                    fill={true}
+                    className="object-contain"
+                    sizes="(max-width: 768px) 5rem, (max-width: 1024px) 5rem, 5rem"
+                  />
+                )}
               </div>
             </div>
           </DialogTitle>

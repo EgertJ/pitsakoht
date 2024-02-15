@@ -1,6 +1,6 @@
 import RegisterForm from "@/components/RegisterForm";
 import React from "react";
-import { getUser } from "../actions";
+import { getUser } from "../../actions";
 import { redirect } from "next/navigation";
 
 export default function page() {

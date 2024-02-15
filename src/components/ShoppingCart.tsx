@@ -14,6 +14,7 @@ import Image from "next/image";
 import { Button } from "./ui/button";
 import PizzaMaking from "./PizzaMaking";
 import { ShoppingBasket } from "lucide-react";
+import Link from "next/link";
 
 export default function ShoppingCart({
   className,
@@ -62,18 +63,21 @@ export default function ShoppingCart({
             <div className="flex flex-col relative py-10 gap-4" key={item.id}>
               <div className="flex border-b-2 py-4 items-center">
                 <div className="w-24 h-16 relative">
-                  <Image
-                    src={item.item.itemImage}
-                    alt={item.item.itemName}
-                    fill
-                    sizes="(max-width: 768px) 5rem, (max-width: 1024px) 5rem, 5rem"
-                  />
+                  {item.item.itemImage && (
+                    <Image
+                      src={item.item.itemImage}
+                      alt={item.item.itemName}
+                      fill
+                      sizes="(max-width: 768px) 5rem, (max-width: 1024px) 5rem, 5rem"
+                    />
+                  )}
                 </div>
                 <div className="flex flex-col flex-1">
                   <h1 className="font-bold">
                     {item.item.itemName} x{item.quantity}
                   </h1>
-                  <p className="text-sm">{item.size.size}</p>
+                  {item.size && <p className="text-sm">{item.size.size}</p>}
+
                   {item.addons.map((addon) => (
                     <p key={addon.addonId} className="text-sm">
                       {addon.addonName} x{addon.addonCount}
@@ -86,12 +90,15 @@ export default function ShoppingCart({
                   <p>{((item.price * item.quantity) / 100).toFixed(2)}€</p>
                 </div>
                 <div className="flex gap-4">
-                  <PizzaMaking
-                    params={item.item}
-                    cartItem={cart[index]}
-                    triggerText="Muuda"
-                    buttonStyle="bg-white text-primary hover:bg-white"
-                  ></PizzaMaking>
+                  {item.item.itemCategory == "Pizza" && (
+                    <PizzaMaking
+                      params={item.item}
+                      cartItem={cart[index]}
+                      triggerText="Muuda"
+                      buttonStyle="bg-white text-primary hover:bg-white"
+                    ></PizzaMaking>
+                  )}
+
                   <div className="relative flex justify-between gap-4">
                     <button
                       type="button"
@@ -123,7 +130,9 @@ export default function ShoppingCart({
               <p>Kokku</p>
               <p>{(finalPrice / 100).toFixed(2)}€</p>
             </div>
-            <Button className="w-full">Tellimust vormistama</Button>
+            <Button className="w-full" asChild>
+              <Link href="/kinnita-tellimus">Tellimust vormistama</Link>
+            </Button>
           </div>
         </SheetFooter>
       </SheetContent>
