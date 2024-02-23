@@ -1,0 +1,76 @@
+import { getUser } from "@/lib/shared/actions/actions";
+import { redirect } from "next/navigation";
+import React from "react";
+import InfoCard from "./components/InfoCard";
+import {
+  dehydrate,
+  HydrationBoundary,
+  QueryClient,
+} from "@tanstack/react-query";
+import {
+  getItemsCount,
+  getLatestOrders,
+  getOrdersCount,
+  getUsersCount,
+} from "./action";
+import LatestOrders from "./components/LatestOrders";
+
+export default async function AdminPage() {
+  const { user } = await getUser();
+
+  if (!user) redirect("/");
+  if (!user.emailVerified) redirect("/");
+  if (user.role !== "ADMIN") redirect("/");
+
+  const queryClient = new QueryClient();
+
+  await queryClient.prefetchQuery({
+    queryKey: ["latestPurchases"],
+    queryFn: () => getLatestOrders(10),
+  });
+
+  await queryClient.prefetchQuery({
+    queryKey: ["ordersCount"],
+    queryFn: () => getOrdersCount(),
+  });
+
+  await queryClient.prefetchQuery({
+    queryKey: ["usersCount"],
+    queryFn: () => getUsersCount(),
+  });
+
+  await queryClient.prefetchQuery({
+    queryKey: ["itemsCount"],
+    queryFn: () => getItemsCount(),
+  });
+
+  return (
+    <div>
+      <h1 className="pb-36 font-bold text-xl ">Pealeht</h1>
+
+      <HydrationBoundary state={dehydrate(queryClient)}>
+        <div className="grid grid-cols-3 ">
+          <InfoCard
+            title="Kasutajaid kokku"
+            queryFn={getUsersCount}
+            queryKey="usersCount"
+          ></InfoCard>
+          <InfoCard
+            title="Oste kokku"
+            queryFn={getOrdersCount}
+            queryKey="ordersCount"
+          ></InfoCard>
+          <InfoCard
+            title="Tooteid kokku"
+            queryFn={getItemsCount}
+            queryKey="itemsCount"
+          ></InfoCard>
+        </div>
+        <div className="">
+          <h1 className="text-xl pb-8">Viimased ostud</h1>
+          <LatestOrders></LatestOrders>
+        </div>
+      </HydrationBoundary>
+    </div>
+  );
+}

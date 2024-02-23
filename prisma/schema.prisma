@@ -30,6 +30,12 @@ enum OrderStatus {
   pending
   processing
   completed
+  delivered
+}
+
+enum IngredientCategory {
+  topping
+  sauce
 }
 
 
@@ -43,9 +49,11 @@ model Item {
   addons ItemAddon[]
   sizes Size[]
   orders OrderItem[]
+  coupon Coupon[]
   categoryId Int @unique
   category Category @relation(fields: [categoryId], references: [id])
   topCategory TopCategory
+
 }
 
 model Category {
@@ -58,6 +66,7 @@ model Ingredient {
   id Int @id @default(autoincrement())
   name String
   price Int
+  category IngredientCategory
   itemsAsIngredient ItemIngredient[]
   itemsAsAddon ItemAddon[]
 }
@@ -65,8 +74,8 @@ model Ingredient {
 model ItemIngredient {
   itemId Int
   ingredientId Int
-  item Item @relation(fields: [itemId], references: [id])
-  ingredient Ingredient @relation(fields: [ingredientId], references: [id])
+  item Item @relation(fields: [itemId], references: [id],  onDelete: Cascade)
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id],  onDelete: Cascade)
 
   @@id([itemId, ingredientId])
 }
@@ -74,8 +83,8 @@ model ItemIngredient {
 model ItemAddon {
   itemId Int
   ingredientId Int
-  item Item @relation(fields: [itemId], references: [id])
-  ingredient Ingredient @relation(fields: [ingredientId], references: [id])
+  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  ingredient Ingredient @relation(fields: [ingredientId], references: [id],  onDelete: Cascade)
   orderItemAddons OrderItemAddon[]
 
   @@id([itemId, ingredientId])
@@ -89,7 +98,7 @@ model Size {
   value   Sizes
   price Int
   itemId  Int    
-  item    Item   @relation(fields: [itemId], references: [id])
+  item    Item   @relation(fields: [itemId], references: [id],  onDelete: Cascade)
 }
 
 
@@ -97,11 +106,12 @@ model Size {
 model Order {
   id String @id
   userId String?
-  user User? @relation(fields: [userId], references: [id])
+  user User? @relation(fields: [userId], references: [id],  onDelete: Cascade)
   email String?
   name String?
   phone String?
   total Int
+  takeaway Boolean
   status OrderStatus
   items    OrderItem[]
   createdAt DateTime @default(now())
@@ -112,9 +122,9 @@ model Order {
 model OrderItem {
   id        Int      @id @default(autoincrement())
   orderId String
-  order Order @relation(fields: [orderId], references: [id])
+  order Order @relation(fields: [orderId], references: [id],  onDelete: Cascade)
   itemId Int
-  item Item @relation(fields: [itemId], references: [id])
+  item Item @relation(fields: [itemId], references: [id],  onDelete: Cascade)
   size Sizes?
   quantity Int
   addons OrderItemAddon[]
@@ -123,12 +133,24 @@ model OrderItem {
 
 model OrderItemAddon {
   orderItemId Int
-  orderItem   OrderItem @relation(fields: [orderItemId], references: [id])
+  orderItem   OrderItem @relation(fields: [orderItemId], references: [id],  onDelete: Cascade)
   itemId Int
   ingredientId Int
-  itemAddon   ItemAddon @relation(fields: [itemId, ingredientId], references: [itemId, ingredientId])
+  itemAddon   ItemAddon @relation(fields: [itemId, ingredientId], references: [itemId, ingredientId],  onDelete: Cascade)
+  quantity Int
 
   @@id([orderItemId, itemId, ingredientId])
+}
+
+model Coupon {
+  id Int @id @default(autoincrement())
+  code String @unique
+  discount Int
+  itemId Int?
+  userId String?
+  item Item? @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  usedBy User[] @relation("UsedCoupons")
 }
 
 
@@ -142,6 +164,8 @@ model User {
   role     Role @default(USER)
   sessions Session[]
   orders Order[]
+  coupon Coupon[]
+  usedCoupons Coupon[] @relation("UsedCoupons")
 }
 
 model Session {
