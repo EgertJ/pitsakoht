@@ -23,6 +23,9 @@ import DeletionAlert from "./DeletionAlert";
 import { toast } from "sonner";
 import { OrderWithItemsAndAddons } from "@/lib/types";
 import { getOrders } from "@/lib/shared/actions/actions";
+type containerType = {
+  [name: string]: OrderWithItemsAndAddons[];
+};
 
 export default function Orders() {
   const [fetchEnabled, setFetchEnabled] = useState<boolean>(true);
@@ -38,18 +41,23 @@ export default function Orders() {
     refetchInterval: 5000,
     enabled: fetchEnabled,
   });
-
-  if (orderIsLoading) return <div>Laeb tellimusi...</div>;
-  if (orderError)
-    return <div>Viga tellimuste laadimisel: {orderError.message}</div>;
-  if (!orderData?.data)
-    return (
-      <div className="flex align-middle justify-center">Tellimusi pole.</div>
-    );
-
   const [orders, setOrders] = useState<OrderWithItemsAndAddons[]>(
-    orderData?.data
+    orderData?.data ? orderData.data : []
   );
+  const [activeContainer, setActiveContainer] = useState<string>("");
+
+  const [activeOrderId, setActiveOrderId] = useState<null | string>(null);
+  const [activeOrderToDelete, setActiveOrderToDelete] =
+    useState<OrderWithItemsAndAddons | null>(null);
+  const [containers, setContainers] = useState<containerType>({
+    ["Ootel"]: orders.filter((order) => order.status === "pending"),
+    ["Tegemisel"]: orders.filter((order) => order.status === "processing"),
+    ["Tehtud"]: orders.filter((order) => order.status === "completed"),
+    ["Kätte antud"]: [],
+  });
+
+
+
 
   useEffect(() => {
     if (orderData && orderData.data) {
@@ -69,21 +77,10 @@ export default function Orders() {
     }
   }, [orderData]);
 
-  type containerType = {
-    [name: string]: OrderWithItemsAndAddons[];
-  };
 
-  const [containers, setContainers] = useState<containerType>({
-    ["Ootel"]: orders.filter((order) => order.status === "pending"),
-    ["Tegemisel"]: orders.filter((order) => order.status === "processing"),
-    ["Tehtud"]: orders.filter((order) => order.status === "completed"),
-    ["Kätte antud"]: [],
-  });
-  const [activeContainer, setActiveContainer] = useState<string>("");
 
-  const [activeOrderId, setActiveOrderId] = useState<null | string>(null);
-  const [activeOrderToDelete, setActiveOrderToDelete] =
-    useState<OrderWithItemsAndAddons | null>(null);
+
+
 
   const sensors = useSensors(
     useSensor(MouseSensor),
@@ -239,6 +236,13 @@ export default function Orders() {
   };
 
   const order = activeOrderId ? getOrderById(orders, activeOrderId) : null;
+  if (orderIsLoading) return <div>Laeb tellimusi...</div>;
+  if (orderError)
+    return <div>Viga tellimuste laadimisel: {orderError.message}</div>;
+  if (!orderData?.data)
+    return (
+      <div className="flex align-middle justify-center">Tellimusi pole.</div>
+    );
 
   return (
     <div>

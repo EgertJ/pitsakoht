@@ -5,8 +5,7 @@ import {
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query";
-import { getOrders } from "./action";
-import { getUser } from "@/lib/shared/actions/actions";
+import { getOrders, getUser } from "@/lib/shared/actions/actions";
 import { redirect } from "next/navigation";
 
 export default async function KöökPage() {
