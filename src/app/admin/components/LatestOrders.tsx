@@ -34,7 +34,12 @@ export default function LatestOrders<TData, TValue>() {
     {
       accessorKey: "status",
       header: "Staatus",
-      accessorFn: (row) => row.status,
+      accessorFn: (row) => {
+        if (row.status === "pending") return "Ootel";
+        if (row.status === "processing") return "Tegemisel";
+        if (row.status === "completed") return "Valmis";
+        if (row.status === "delivered") return "Kätte antud";
+      },
     },
     {
       accessorKey: "createdAt",

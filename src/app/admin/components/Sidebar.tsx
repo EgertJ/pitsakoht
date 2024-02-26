@@ -6,6 +6,7 @@ import {
   MdLogout,
   MdDashboard,
 } from "react-icons/md";
+import { RiCoupon2Line } from "react-icons/ri";
 
 import { GiTomato } from "react-icons/gi";
 import { BiNotepad } from "react-icons/bi";
@@ -32,11 +33,15 @@ export default function Sidebar() {
           </div>
           <div className="flex text-xl items-center gap-2">
             <GiTomato />
-            <Link href={"/admin/kasutajad"}>Koostisosad</Link>
+            <Link href={"/admin/koostisosad"}>Koostisosad</Link>
           </div>
           <div className="flex text-xl items-center gap-2">
             <BiNotepad />
             <Link href={"/admin/tellimused"}>Tellimused</Link>
+          </div>
+          <div className="flex text-xl items-center gap-2">
+            <RiCoupon2Line />
+            <Link href={"/admin/kupongid"}>Kupongid</Link>
           </div>
         </div>
       </div>

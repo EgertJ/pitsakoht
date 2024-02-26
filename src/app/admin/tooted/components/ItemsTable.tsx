@@ -1,11 +1,12 @@
 "use client";
 import { useQuery } from "@tanstack/react-query";
-import React from "react";
+import React, { useState } from "react";
 import { deleteItem, getItems } from "../action";
 import {
   ColumnDef,
   flexRender,
   getCoreRowModel,
+  getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
 import { ItemWithSizesIngredientsAndAddons } from "@/lib/types";
@@ -28,8 +29,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { MoreHorizontalIcon } from "lucide-react";
 import Link from "next/link";
+import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
 
 export default function ItemsTable() {
+  const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
+
+  const [activeItem, setActiveItem] = useState(1);
   const {
     data: itemData,
     error: itemError,
@@ -98,18 +103,21 @@ export default function ItemsTable() {
           <DropdownMenuTrigger asChild>
             <Button size="icon" variant="ghost">
               <MoreHorizontalIcon className="w-4 h-4" />
-              <span className="sr-only">Actions</span>
+              <span className="sr-only">Tegevused</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem
               className="hover:cursor-pointer"
-              onClick={() => handleItemDelete(row.original.id)}
+              onClick={() => {
+                setActiveItem(row.original.id);
+                setOpenConfirmationModal(true);
+              }}
             >
               Kustuta
             </DropdownMenuItem>
             <DropdownMenuItem className="hover:cursor-pointer">
-              Muuda
+              <Link href={`/admin/tooted/${row.original.id}`}>Muuda</Link>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -121,6 +129,7 @@ export default function ItemsTable() {
     data: itemData?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   });
 
   if (itemError)
@@ -131,6 +140,11 @@ export default function ItemsTable() {
 
   return (
     <div>
+      <DeleteConfirmationModal
+        open={openConfirmationModal}
+        setOpen={setOpenConfirmationModal}
+        onDelete={() => handleItemDelete(activeItem)}
+      ></DeleteConfirmationModal>
       <div className="flex justify-end pb-2">
         <Button asChild>
           <Link href="/admin/tooted/lisa">Lisa toode</Link>
@@ -185,6 +199,24 @@ export default function ItemsTable() {
             )}
           </TableBody>
         </Table>
+      </div>
+      <div className="space-x-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+        >
+          Eelmine
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+        >
+          Järgmine
+        </Button>
       </div>
     </div>
   );

@@ -5,6 +5,7 @@ import Image from "next/image";
 import PizzaMaking from "@/components/ui/PizzaMaking";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/../store";
+import { sizeToText } from "@/utils/sizeToText";
 
 export default function CartItems() {
   const [cart, increaseQuantity, decreaseQuantity] = useCartStore((state) => [
@@ -50,7 +51,7 @@ export default function CartItems() {
                   .join(", ")}
               </p>
               <p className="flex justify-center md:block">
-                {item.size && item.size.size}
+                {item.size && sizeToText(item.size.size)}
               </p>
               <p className="font-bold flex justify-center md:block">
                 {((item.price * item.quantity) / 100).toFixed(2)}€

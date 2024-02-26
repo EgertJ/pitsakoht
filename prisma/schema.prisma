@@ -50,7 +50,7 @@ model Item {
   sizes Size[]
   orders OrderItem[]
   coupon Coupon[]
-  categoryId Int @unique
+  categoryId Int 
   category Category @relation(fields: [categoryId], references: [id])
   topCategory TopCategory
 

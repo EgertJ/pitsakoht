@@ -27,9 +27,9 @@ export default function InfoCard(props: InfoCardProps) {
   return (
     <Card className="border-none rounded-none">
       <CardHeader className="pl-0">
-        <CardTitle>{props.title}</CardTitle>
+        <CardTitle>{data?.data}</CardTitle>
       </CardHeader>
-      <CardContent className="pl-0">{data?.data}</CardContent>
+      <CardContent className="pl-0">{props.title}</CardContent>
     </Card>
   );
 }

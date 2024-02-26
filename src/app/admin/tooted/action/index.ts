@@ -1,7 +1,8 @@
 "use server";
 import prisma from "@/lib/db";
 import { getUser } from "@/lib/shared/actions/actions";
-import { revalidatePath } from "next/cache";
+import fs from "fs/promises";
+import path from "path";
 export async function getItems() {
   try {
     const items = await prisma.item.findMany({
@@ -28,7 +29,8 @@ export async function deleteItem(id: number) {
 
   try {
     const deletedItem = await prisma.item.delete({ where: { id: id } });
-
+    if (deletedItem.image)
+      await fs.unlink(path.join(process.cwd(), "/public", deletedItem.image));
     return { data: deletedItem };
   } catch (error) {
     return { error: error };

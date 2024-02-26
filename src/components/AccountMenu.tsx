@@ -20,7 +20,7 @@ export default function AccountMenu({ user }: { user: User | null }) {
         {user && (
           <>
             <Link
-              href="/vaheta-kasutaja-andmeid"
+              href="/muuda-andmeid"
               className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 w-full"
               role="menuitem"
             >

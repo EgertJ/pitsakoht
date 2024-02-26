@@ -7,8 +7,14 @@ import {
 } from "@tanstack/react-query";
 import ShoppingCartButton from "@/components/ui/ShoppingCartButton";
 import { getCategories } from "./action";
+import { getUser } from "@/lib/shared/actions/actions";
+import { redirect } from "next/navigation";
 
 export default async function Home() {
+  const { user } = await getUser();
+
+  if (user && !user.emailVerified) redirect("/valideeri");
+
   const queryClient = new QueryClient();
   await queryClient.prefetchQuery({
     queryKey: ["categories"],

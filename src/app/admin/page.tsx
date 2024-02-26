@@ -51,17 +51,17 @@ export default async function AdminPage() {
       <HydrationBoundary state={dehydrate(queryClient)}>
         <div className="grid grid-cols-3 ">
           <InfoCard
-            title="Kasutajaid kokku"
+            title="Kasutajat kokku"
             queryFn={getUsersCount}
             queryKey="usersCount"
           ></InfoCard>
           <InfoCard
-            title="Oste kokku"
+            title="Ostu kokku"
             queryFn={getOrdersCount}
             queryKey="ordersCount"
           ></InfoCard>
           <InfoCard
-            title="Tooteid kokku"
+            title="Toodet kokku"
             queryFn={getItemsCount}
             queryKey="itemsCount"
           ></InfoCard>

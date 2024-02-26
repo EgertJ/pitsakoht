@@ -121,7 +121,7 @@ async function main() {
     data: {
       name: "Pepperoni",
       image: "/Pepperoni.jpg",
-      categoryId: 2,
+      categoryId: 1,
       topCategory: "Pizza",
       price: 890,
       sizes: {

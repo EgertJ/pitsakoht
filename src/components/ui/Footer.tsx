@@ -16,9 +16,9 @@ export default function Footer() {
             <p>teisipäev 16:00–21:00</p>
             <p>kolmapäev 16:00–21:00</p>
             <p>neljapäev 16:00–21:00</p>
-            <p>reede 16:00–21:00</p>
-            <p>laupäev 16:00–21:00</p>
-            <p>pühapäev 16:00–21:00</p>
+            <p>reede 16:00–22:00</p>
+            <p>laupäev 12:00–22:00</p>
+            <p>pühapäev 12:00–21:00</p>
           </div>
         </div>
         <div className="flex flex-col gap-4 w-full md:w-fit">
@@ -31,9 +31,7 @@ export default function Footer() {
             <Link href="/kontakt" className="underline">
               Kontakt
             </Link>
-            <Link href="/minu-konto" className="underline">
-              Minu konto
-            </Link>
+
             <Link href="/logi-sisse" className="underline">
               Logi sisse
             </Link>
@@ -71,7 +69,7 @@ export default function Footer() {
               Mustamäe tee 3a, Tallinn, Estonia
             </a>
           </div>
-          <div className="flex justify-between">
+          <div className="flex gap-10 justify-normal md:justify-between">
             <a href="https://www.facebook.com/Pitsakoht">
               <FaFacebook size={30}></FaFacebook>
             </a>

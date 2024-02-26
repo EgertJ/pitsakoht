@@ -43,7 +43,10 @@ export default function Item({ order }: ItemProps) {
           </div>
         ))}
       </CardContent>
-      <CardFooter>{(order.total / 100).toFixed(2)}€</CardFooter>
+      <CardFooter className="flex justify-between">
+        <p>{(order.total / 100).toFixed(2)}€ </p>
+        <p>{order.takeaway ? "Kaasa" : "Kohapeal"}</p>
+      </CardFooter>
     </Card>
   );
 }

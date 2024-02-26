@@ -1,6 +1,6 @@
 import { Sizes } from "@prisma/client";
 
-export function sizeToText(size: Sizes) {
+export function sizeToText(size: Sizes): string {
   switch (size) {
     case "s":
       return "Väike";

@@ -18,10 +18,11 @@ import React, { useEffect, useState } from "react";
 import Container from "./Container";
 import Item from "./Item";
 import { useQuery } from "@tanstack/react-query";
-import { getOrders, updateOrderStatus } from "../action";
+import { updateOrderStatus } from "../action";
 import DeletionAlert from "./DeletionAlert";
 import { toast } from "sonner";
 import { OrderWithItemsAndAddons } from "@/lib/types";
+import { getOrders } from "@/lib/shared/actions/actions";
 
 export default function Orders() {
   const [fetchEnabled, setFetchEnabled] = useState<boolean>(true);

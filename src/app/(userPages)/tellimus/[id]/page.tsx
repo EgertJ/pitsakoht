@@ -5,12 +5,17 @@ import {
   dehydrate,
 } from "@tanstack/react-query";
 import { getOrder } from "./action";
+import { getUser } from "@/lib/shared/actions/actions";
+import { redirect } from "next/navigation";
 
 export default async function TellimusPage({
   params,
 }: {
   params: { id: string };
 }) {
+  const { user } = await getUser();
+
+  if (user && !user.emailVerified) redirect("/valideeri");
   const queryClient = new QueryClient();
   await queryClient.prefetchQuery({
     queryKey: ["order"],
