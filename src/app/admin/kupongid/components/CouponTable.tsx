@@ -1,5 +1,9 @@
 "use client";
 
+import { useQuery } from "@tanstack/react-query";
+import React, { useEffect, useState } from "react";
+import { deleteCoupon, getCoupons, getItems } from "../action";
+import { getUsers } from "../../kasutajad/action";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -15,8 +19,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { OrderWithItemsAndAddons } from "@/lib/types";
-import { useQuery } from "@tanstack/react-query";
 import {
   ColumnDef,
   flexRender,
@@ -24,49 +26,99 @@ import {
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { Coupon } from "@prisma/client";
 import { MoreHorizontalIcon } from "lucide-react";
-import React, { useState } from "react";
 import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
-import { deleteOrder } from "../action";
+import CouponModal, { InitialValues } from "./CouponModal";
 import { toast } from "sonner";
-import OrderDetailModal from "./OrderDetailModal";
-import { statusToText } from "@/utils/statusToText";
-import { getOrders } from "@/lib/shared/actions/actions";
 
-export default function OrdersTable() {
+export default function CouponTable() {
   const {
-    data: orderData,
-    error: orderError,
-    isLoading: orderIsLoading,
-    refetch,
+    data: couponData,
+    error: couponError,
+    isLoading: couponIsLoading,
+    refetch: couponRefetch,
   } = useQuery({
-    queryKey: ["orders"],
-    queryFn: () => getOrders(),
+    queryKey: ["coupons"],
+    queryFn: () => getCoupons(),
+  });
+  const {
+    data: itemData,
+    error: itemError,
+    isLoading: itemIsLoading,
+  } = useQuery({
+    queryKey: ["items"],
+    queryFn: () => getItems(),
+  });
+  const {
+    data: userData,
+    error: userError,
+    isLoading: userIsLoading,
+  } = useQuery({
+    queryKey: ["users"],
+    queryFn: () => getUsers(),
   });
 
-  const [activeItem, setActiveItem] = useState("");
+  const [activeItem, setActiveItem] = useState(0);
   const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
-  const [openDetailModal, setOpenDetailModal] = useState(false);
+  const [openUpdateModal, setOpenUpdateModal] = useState(false);
+  const [initialValues, setInitialValues] = useState<InitialValues | undefined>(
+    undefined
+  );
 
-  const columns: ColumnDef<OrderWithItemsAndAddons>[] = [
+  const handleModalChange = (open: boolean) => {
+    setOpenUpdateModal(open);
+
+    if (!open) {
+      setInitialValues(undefined);
+    }
+  };
+
+  async function handleCouponDelete(id: number) {
+    await deleteCoupon(id)
+      .then((data) => {
+        if (data.error) {
+          toast.error(data.error as any);
+          return;
+        }
+        toast.success("Kupong kustutatud!");
+        couponRefetch();
+      })
+      .catch((error) => toast.error(error));
+  }
+
+  if (couponError)
+    return <div>Viga tellimuste kättesaamises. + {couponError.message}</div>;
+  if (couponIsLoading) return <div>Laeb...</div>;
+  if (!couponData?.data) return <div>Viga tellimuste kättesaamises.</div>;
+  if (itemError)
+    return <div>Viga toodete kättesaamises. + {itemError.message}</div>;
+  if (itemIsLoading) return <div>Laeb...</div>;
+  if (!itemData?.data) return <div>Viga toodete kättesaamises.</div>;
+  if (userError)
+    return <div>Viga kasutajate kättesaamises. + {userError.message}</div>;
+  if (userIsLoading) return <div>Laeb...</div>;
+  if (!userData?.data) return <div>Viga kastuajate kättesaamises.</div>;
+
+  const columns: ColumnDef<Coupon>[] = [
     { accessorKey: "id", header: "Id" },
+    { accessorKey: "code", header: "Kood" },
+    { accessorKey: "discount", header: "Soodustus" },
     {
-      accessorKey: "createdAt",
-      header: "Kuupäev",
-      accessorFn: (row) => row.createdAt.toLocaleString("et-EE"),
-    },
-    { accessorKey: "name", header: "Nimi" },
-    {
-      accessorKey: "status",
-      header: "Staatus",
+      accessorKey: "itemId",
+      header: "Seotud toode",
       accessorFn: (row) => {
-        return statusToText(row.status);
+        const item = itemData?.data.find((item) => item.id === row.itemId);
+        return item ? item.name : "Puudub";
       },
     },
     {
-      accessorKey: "total",
-      header: "Kokku",
-      accessorFn: (row) => (row.total / 100).toFixed(2) + "€",
+      accessorKey: "userId",
+      header: "Seotud kasutaja",
+      accessorFn: (row) => {
+        const user = userData?.data.find((user) => user.id === row.userId);
+        return user ? user.name : "Puudub";
+      },
     },
     {
       header: "Tegevused",
@@ -83,19 +135,26 @@ export default function OrdersTable() {
               className="hover:cursor-pointer"
               onClick={() => {
                 setActiveItem(row.original.id);
-                setOpenDetailModal(true);
+
+                setOpenConfirmationModal(true);
               }}
             >
-              Vaata detaile
+              Kustuta
             </DropdownMenuItem>
             <DropdownMenuItem
               className="hover:cursor-pointer"
               onClick={() => {
                 setActiveItem(row.original.id);
-                setOpenConfirmationModal(true);
+                setInitialValues({
+                  code: row.original.code,
+                  discount: row.original.discount,
+                  userId: row.original.userId ? row.original.userId : undefined,
+                  itemId: row.original.itemId ? row.original.itemId : undefined,
+                });
+                handleModalChange(true);
               }}
             >
-              Kustuta
+              Muuda
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -104,43 +163,32 @@ export default function OrdersTable() {
   ];
 
   const table = useReactTable({
-    data: orderData?.data || [],
+    data: couponData?.data || [],
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
-
-  if (orderError)
-    return <div>Viga tellimuste kättesaamises. + {orderError.message}</div>;
-  if (orderIsLoading) return <div>Laeb...</div>;
-  if (!orderData?.data) return <div>Viga tellimuste kättesaamises.</div>;
-
-  async function handleOrderDelete(id: string) {
-    await deleteOrder(id)
-      .then((data) => {
-        if (data.error) {
-          toast.error(data.error as any);
-          return;
-        }
-        toast.success("Tellimus edukalt kustutatud");
-        refetch();
-      })
-      .catch((error) => toast.error("Viga tellimuse kustutamisel:" + error));
-  }
 
   return (
     <div>
       <DeleteConfirmationModal
         open={openConfirmationModal}
         setOpen={setOpenConfirmationModal}
-        onDelete={() => handleOrderDelete(activeItem)}
+        onDelete={() => handleCouponDelete(activeItem)}
       ></DeleteConfirmationModal>
 
-      <OrderDetailModal
-        open={openDetailModal}
-        setOpen={setOpenDetailModal}
-        orderDetails={orderData.data.find((order) => order.id === activeItem)}
-      ></OrderDetailModal>
+      <div className="flex justify-end pb-2">
+        <Button onClick={() => setOpenUpdateModal(true)}>Lisa kupong</Button>
+        <CouponModal
+          initialValues={initialValues ? initialValues : undefined}
+          id={initialValues ? activeItem : undefined}
+          refetch={() => couponRefetch()}
+          open={openUpdateModal}
+          setOpen={handleModalChange}
+          itemData={itemData.data}
+          userData={userData.data}
+        ></CouponModal>
+      </div>
 
       <div className="rounded-md border">
         <Table>

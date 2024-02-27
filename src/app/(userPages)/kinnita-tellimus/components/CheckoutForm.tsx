@@ -28,7 +28,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { User } from "lucia";
 import { OrderType } from "@/lib/types";
 import { toast } from "sonner";
-import { createOrder } from "../action";
+import { createOrder, validateCoupon } from "../action";
 
 const orderFormSchema = z.object({
   name: z.string().min(1, {
@@ -60,16 +60,37 @@ export default function CheckoutForm({ user }: { user: User | null }) {
 
   const [finalPrice, setFinalPrice] = useState(0);
 
+  const [globalDiscount, setGlobalDiscount] = useState<number | undefined>(
+    undefined
+  );
+  const [itemDiscount, setItemDiscount] = useState<
+    { id: number; discount: number } | undefined
+  >(undefined);
   const [toggleOn, setToggleOn] = useState(false);
+  const [tooltipOn, setToolTipOn] = useState(false);
+  const [coupon, setCoupon] = useState("");
+  const [couponError, setCouponError] = useState<any>(null);
+  const [copuonUsed, setCouponUsed] = useState<boolean>(false);
 
   useEffect(() => {
     const totalPrice = cart.reduce(
       (accumulator, currentItem) =>
-        accumulator + currentItem.price * currentItem.quantity,
+        itemDiscount
+          ? currentItem.item.itemId === itemDiscount.id
+            ? accumulator +
+              currentItem.price *
+                (1 - itemDiscount.discount / 100) *
+                currentItem.quantity
+            : accumulator + currentItem.price * currentItem.quantity
+          : accumulator + currentItem.price * currentItem.quantity,
       0
     );
     if (!toggleOn) {
-      setFinalPrice(totalPrice);
+      if (!globalDiscount) {
+        setFinalPrice(totalPrice);
+      } else {
+        setFinalPrice(totalPrice * (1 - globalDiscount / 100));
+      }
     } else {
       const packagePrice = cart.reduce((accumulator, item) => {
         if (item.item.itemCategory === "Pizza") {
@@ -79,11 +100,13 @@ export default function CheckoutForm({ user }: { user: User | null }) {
         }
       }, 0);
 
-      setFinalPrice(totalPrice + packagePrice);
+      if (!globalDiscount) {
+        setFinalPrice(totalPrice + packagePrice);
+      } else {
+        setFinalPrice((totalPrice + packagePrice) * (1 - globalDiscount / 100));
+      }
     }
-  }, [toggleOn, cart]);
-
-  const [tooltipOn, setToolTipOn] = useState(false);
+  }, [toggleOn, cart, itemDiscount, globalDiscount]);
 
   async function onSubmit(values: z.infer<typeof orderFormSchema>) {
     const newOrder: OrderType = {
@@ -104,6 +127,34 @@ export default function CheckoutForm({ user }: { user: User | null }) {
     } else {
       clearCart();
     }
+  }
+
+  async function handleValidateCoupon() {
+    setGlobalDiscount(undefined);
+    setItemDiscount(undefined);
+
+    await validateCoupon(coupon)
+      .then((data) => {
+        if (data.error) {
+          setCouponUsed(false);
+          setCouponError(data.error);
+          return;
+        }
+        if (data.data) {
+          setCouponError(undefined);
+          setCouponUsed(true);
+          if (data.data.itemId) {
+            setItemDiscount({
+              id: data.data.itemId,
+              discount: data.data.discount,
+            });
+          }
+          if (data.data.userId && !data.data.itemId) {
+            setGlobalDiscount(data.data.discount);
+          }
+        }
+      })
+      .catch((error) => toast.error(error));
   }
 
   return (
@@ -177,10 +228,37 @@ export default function CheckoutForm({ user }: { user: User | null }) {
               </FormItem>
             )}
           ></FormField>
+          {user && (
+            <div>
+              <Label htmlFor="kupong">Kupong</Label>
+              <div className="flex gap-4">
+                <Input
+                  id="kupong"
+                  className="w-1/12"
+                  onChange={(e) => setCoupon(e.target.value)}
+                  value={coupon}
+                ></Input>
+                <Button type="button" onClick={handleValidateCoupon}>
+                  Valideeri kupong
+                </Button>
+              </div>
+              {couponError && (
+                <div className="my-4 p-3 bg-red-100 text-red-800 rounded">
+                  {couponError}
+                </div>
+              )}
+              {copuonUsed && (
+                <div className="my-4 p-3 bg-green-100 text-green-800 rounded">
+                  Kupong kasutuses
+                </div>
+              )}
+            </div>
+          )}
 
           <h1 className="font-bold text-xl">
             Kokku: {(finalPrice / 100).toFixed(2)}€
           </h1>
+
           <Button className="w-full md:w-1/6" type="submit">
             Mine maksma
           </Button>

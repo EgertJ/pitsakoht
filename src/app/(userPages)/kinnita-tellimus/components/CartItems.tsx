@@ -28,6 +28,7 @@ export default function CartItems() {
                     src={item.item.itemImage}
                     alt={item.item.itemName}
                     fill
+                    sizes="(min-width: 768px) 50vw, 100vw"
                   ></Image>
                 )}
               </div>

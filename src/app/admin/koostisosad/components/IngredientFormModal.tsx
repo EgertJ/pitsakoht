@@ -62,7 +62,7 @@ export default function IngredientFormModal({
     } else {
       form.reset(defaultValues);
     }
-  }, [initialValues]);
+  }, [initialValues, open]);
 
   const defaultValues: z.infer<typeof IngredientSchema> = initialValues
     ? {
@@ -94,7 +94,11 @@ export default function IngredientFormModal({
         return;
       }
       await updateIngredient(id, updatedData)
-        .then(() => {
+        .then((data) => {
+          if (data.error) {
+            toast.error(data.error as any);
+            return;
+          }
           toast.success("Koostiosa uuendatud");
           refetch();
         })
@@ -105,10 +109,14 @@ export default function IngredientFormModal({
 
     await addIngredient(values)
       .then((data) => {
+        if (data.error) {
+          toast.error(data.error as any);
+          return;
+        }
         toast.success("Koostiosa lisatud.");
         refetch();
       })
-      .catch((error) => console.log(error));
+      .catch((error) => toast.error(error));
   }
 
   const categorySelectionOptions: {

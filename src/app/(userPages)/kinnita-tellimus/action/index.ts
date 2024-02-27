@@ -1,6 +1,7 @@
 "use server";
 
 import prisma from "@/lib/db";
+import { getUser } from "@/lib/shared/actions/actions";
 import { OrderType } from "@/lib/types";
 import { redirect } from "next/navigation";
 
@@ -46,4 +47,23 @@ export async function createOrder(order: OrderType) {
   if (!orderId)
     return { error: "Ostu sooritamisel tekkis viga. Proovige uuesti." };
   return redirect(`/tellimus/${orderId}`);
+}
+
+export async function validateCoupon(code: string) {
+  const { user } = await getUser();
+  if (!user) return { error: "Pole lubatud!" };
+  if (!user.emailVerified) return { error: "Pole lubatud!" };
+  try {
+    const coupon = await prisma.coupon.findFirst({ where: { code: code } });
+
+    if (!coupon) return { error: "Kupongi ei leitud!" };
+
+    if (coupon.userId) {
+      if (coupon.userId !== user.id) return { error: "Kupongi ei leitud!" };
+    }
+
+    return { data: coupon };
+  } catch (error) {
+    return { error: error };
+  }
 }

@@ -105,16 +105,14 @@ export default function UserForm({ user }: { user: User }) {
     if (values.current_password)
       updatedData.current_password = values.current_password;
 
-    console.log(updatedData);
-
-    const updatedUser = await updateUser(updatedData)
+    await updateUser(updatedData)
       .then((data) => {
         if (data?.error) {
           setError(data.error);
         }
         if (data.data) {
           toast.success("Kasutaja andmed uuendatud!");
-          if (updatedData.email) redirect("/valideeri");
+
           setError(null);
         }
       })

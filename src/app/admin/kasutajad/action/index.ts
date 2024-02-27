@@ -25,10 +25,14 @@ export async function updateUser(
   id: string,
   updatedData: Partial<z.infer<typeof UserSchema>>
 ) {
+  const result = UserSchema.safeParse(updatedData);
+
+  if (!result.success) return { error: "Tekkis tõrge. Proovige uuesti." };
+
   try {
     const updatedUser = await prisma.user.update({
       where: { id: id },
-      data: updatedData,
+      data: result.data,
     });
 
     return { data: updatedUser };

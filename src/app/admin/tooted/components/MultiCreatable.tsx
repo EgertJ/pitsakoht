@@ -164,6 +164,7 @@ const MultiSelectable = forwardRef((props: any, ref) => {
     return (
       <Select
         {...props}
+        isClearable={false}
         inputValue={selectInput}
         onInputChange={onInputChange}
         onKeyDown={onKeyDown}
@@ -190,6 +191,7 @@ const MultiSelectable = forwardRef((props: any, ref) => {
   return (
     <Select
       {...props}
+      isClearable={false}
       inputValue={selectInput}
       onInputChange={onInputChange}
       filterOption={customFilterOption}

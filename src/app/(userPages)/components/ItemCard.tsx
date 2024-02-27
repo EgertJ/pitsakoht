@@ -17,6 +17,7 @@ export interface ItemParams {
   itemImage: string | null;
   itemIngredients: string[];
   itemPrice: number;
+  itemDiscountPrice: number | null;
   itemAddons: {
     id: number;
     ingredientId: number;
@@ -51,7 +52,18 @@ export default function ItemCard(params: ItemParams) {
         </div>
       </CardContent>
       <CardFooter className="justify-between">
-        <p className="font-bold">{(params.itemPrice / 100).toFixed(2)}€</p>
+        <p className="font-bold flex gap-2">
+          <span className={params.itemDiscountPrice ? "line-through" : ""}>
+            {(params.itemPrice / 100).toFixed(2)}€{" "}
+          </span>
+          {params.itemDiscountPrice ? (
+            <span className="text-red-500">
+              {(params.itemDiscountPrice / 100).toFixed(2)}€
+            </span>
+          ) : (
+            ""
+          )}
+        </p>
         {params.itemCategory === "Pizza" && (
           <PizzaMaking
             params={params}

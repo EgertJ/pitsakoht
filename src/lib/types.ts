@@ -44,7 +44,7 @@ export const codeSchema = z.object({
   }),
 });
 
-const ImageSchema = z.instanceof(FormData).optional();
+const ImageSchema = z.instanceof(FormData).optional().nullable();
 
 const SizeSchema = z.object({
   name: z.nativeEnum(Sizes),
@@ -57,10 +57,10 @@ export const ItemSchema = z.object({
   }),
   image: ImageSchema,
   price: z.string().min(1, { message: "Hind peab olema" }),
-  discountPrice: z.string().optional(),
-  incredients: z.array(z.string()).optional(),
-  addons: z.array(z.string()).optional(),
-  sizes: z.array(SizeSchema).optional(),
+  discountPrice: z.string().optional().nullable(),
+  incredients: z.array(z.string()).optional().nullable(),
+  addons: z.array(z.string()).optional().nullable(),
+  sizes: z.array(SizeSchema).optional().nullable(),
   categoryId: z.string().min(1, { message: "Kategooria peab olema" }),
   topCategory: z.nativeEnum(TopCategory),
 });
@@ -72,13 +72,36 @@ export const IngredientSchema = z.object({
   category: z.nativeEnum(IngredientCategory),
 });
 
+export const UpdateItemSchema = z.object({
+  name: z
+    .string()
+    .min(1, {
+      message: "Nimi peab olema",
+    })
+    .optional(),
+  image: ImageSchema,
+  price: z.string().min(1, { message: "Hind peab olema" }).optional(),
+  discountPrice: z.string().optional().nullable(),
+  incredients: z.array(z.string()).optional().nullable(),
+  addons: z.array(z.string()).optional().nullable(),
+  sizes: z.array(SizeSchema).optional().nullable(),
+  categoryId: z
+    .string()
+    .min(1, { message: "Kategooria peab olema" })
+    .optional(),
+  topCategory: z.nativeEnum(TopCategory).optional(),
+});
+
 export const UserSchema = z.object({
-  name: z.string().min(1, {
-    message: "Nimi peab olema",
-  }),
-  email: z.string().email({ message: "Ei ole õige e-mail" }),
-  email_verified: z.boolean(),
-  role: z.nativeEnum(Role),
+  name: z
+    .string()
+    .min(1, {
+      message: "Nimi peab olema",
+    })
+    .optional(),
+  email: z.string().email({ message: "Ei ole õige e-mail" }).optional(),
+  email_verified: z.boolean().optional(),
+  role: z.nativeEnum(Role).optional(),
 });
 
 export const updateSchema = z
@@ -138,6 +161,62 @@ export const updateSchema = z
     }
   )
   .optional();
+
+export const CouponSchema = z
+  .object({
+    code: z.string().min(1, { message: "Kood on vajalik" }),
+    discount: z.number(),
+    itemId: z.number().nullable().optional(),
+    userId: z.string().nullable().optional(),
+  })
+  .transform((data) => ({
+    ...data,
+    discount:
+      typeof data.discount === "string"
+        ? parseFloat(data.discount)
+        : data.discount,
+  }))
+  .refine((data) => typeof data.discount == "number" || !isNaN(data.discount), {
+    message: "Soodustus peab olema number.",
+    path: ["discount"],
+  })
+  .refine((data) => data.discount >= 0 && data.discount <= 100, {
+    message: "Soodustus peab olema protsent (0-100).",
+    path: ["discount"],
+  })
+  .refine((data) => data.userId !== undefined || data.itemId !== undefined, {
+    message: "Seotud kasutaja peab olema, kui seotud toodet pole.",
+    path: ["userId"],
+  })
+  .refine((data) => data.itemId !== undefined || data.userId !== undefined, {
+    message: "Seotud toode peab olema, kui seotud kasutajat pole.",
+    path: ["itemId"],
+  });
+
+export const UpdateCouponSchema = z
+  .object({
+    code: z.string().min(1, { message: "Kood on vajalik" }).optional(),
+    discount: z.number().optional(),
+    itemId: z.number().nullable().optional(),
+    userId: z.string().nullable().optional(),
+  })
+  .transform((data) => ({
+    ...data,
+    discount:
+      typeof data.discount === "string"
+        ? parseFloat(data.discount)
+        : data.discount,
+  }))
+  .refine(
+    (data) =>
+      typeof data.discount === "undefined" ||
+      typeof data.discount == "number" ||
+      !isNaN(data.discount),
+    {
+      message: "Soodustus peab olema number.",
+      path: ["discount"],
+    }
+  );
 
 export type AddonType = {
   addonId: number;

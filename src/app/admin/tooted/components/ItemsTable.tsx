@@ -48,6 +48,10 @@ export default function ItemsTable() {
   async function handleItemDelete(id: number) {
     await deleteItem(id)
       .then((item) => {
+        if (item.error) {
+          toast.error(item.error as any);
+          return;
+        }
         refetch();
         return toast.success(item.data?.name + " kustutatud");
       })

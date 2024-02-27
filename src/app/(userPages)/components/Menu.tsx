@@ -46,46 +46,46 @@ export default function Menu() {
             <div className="flex justify-center md:justify-start">
               <h1 className="font-bold text-2xl">{menuItem.name}</h1>
             </div>
-            {menuItem.items.map((item, index) => {
-              item.sizes.sort((a, b) => a.price - b.price);
+            <div className="grid md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-y-2 my-10 gap-x-10">
+              {menuItem.items.map((item, index) => {
+                item.sizes.sort((a, b) => a.price - b.price);
 
-              return (
-                <div
-                  className="grid md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-y-2 my-10 gap-x-10"
-                  key={item.id}
-                >
-                  <motion.div
-                    variants={variants}
-                    initial="hidden"
-                    whileInView={"enter"}
-                    viewport={{ once: true }}
-                    transition={{ delay: 0.2 }}
-                  >
-                    <ItemCard
-                      itemCategory={item.topCategory}
-                      itemId={item.id}
-                      itemName={item.name}
-                      itemImage={item.image}
-                      itemPrice={item.price}
-                      itemIngredients={item.incredients.map(
-                        (item) => item.ingredient.name
-                      )}
-                      itemAddons={item.addons.map((item) => ({
-                        id: item.itemId,
-                        ingredientId: item.ingredientId,
-                        name: item.ingredient.name,
-                        price: item.ingredient.price,
-                        category: item.ingredient.category,
-                      }))}
-                      itemSizes={item.sizes.map((item) => ({
-                        size: item.value,
-                        price: item.price,
-                      }))}
-                    ></ItemCard>
-                  </motion.div>
-                </div>
-              );
-            })}
+                return (
+                  <div key={item.id}>
+                    <motion.div
+                      variants={variants}
+                      initial="hidden"
+                      whileInView={"enter"}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      <ItemCard
+                        itemCategory={item.topCategory}
+                        itemId={item.id}
+                        itemName={item.name}
+                        itemImage={item.image}
+                        itemPrice={item.price}
+                        itemDiscountPrice={item.discountPrice}
+                        itemIngredients={item.incredients.map(
+                          (item) => item.ingredient.name
+                        )}
+                        itemAddons={item.addons.map((item) => ({
+                          id: item.itemId,
+                          ingredientId: item.ingredientId,
+                          name: item.ingredient.name,
+                          price: item.ingredient.price,
+                          category: item.ingredient.category,
+                        }))}
+                        itemSizes={item.sizes.map((item) => ({
+                          size: item.value,
+                          price: item.price,
+                        }))}
+                      ></ItemCard>
+                    </motion.div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         );
       })}

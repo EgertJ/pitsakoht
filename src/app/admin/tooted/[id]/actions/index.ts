@@ -2,7 +2,7 @@
 
 import prisma from "@/lib/db";
 import { getUser } from "@/lib/shared/actions/actions";
-import { ItemSchema } from "@/lib/types";
+import { ItemSchema, UpdateItemSchema } from "@/lib/types";
 import path from "path";
 import { z } from "zod";
 import fs from "fs/promises";
@@ -25,7 +25,7 @@ export async function getItem(id: string) {
 
 export async function updateItem(
   id: string,
-  updatedItems: Partial<z.infer<typeof ItemSchema>>
+  updatedItems: Partial<z.infer<typeof UpdateItemSchema>>
 ) {
   const { user } = await getUser();
 
@@ -33,7 +33,7 @@ export async function updateItem(
   if (!user.emailVerified) return { error: "Pole lubatud!" };
   if (user.role !== "ADMIN") return { error: "Pole lubatud" };
 
-  const result = ItemSchema.safeParse(updatedItems);
+  const result = UpdateItemSchema.safeParse(updatedItems);
 
   if (!result.success) return { error: "Tekkis tõrge. Proovige uuesti." };
 
@@ -46,28 +46,34 @@ export async function updateItem(
   }
 
   //Creation of new product image, if old image exists, delete it.
-  if (image) {
+  if (image || image === null) {
     if (oldImage) {
-      await fs.unlink(path.join(process.cwd(), "/public", oldImage));
+      try {
+        await fs.unlink(path.join(process.cwd(), "/public", oldImage));
+      } catch (error) {}
     }
-    const imagePath = path.join(process.cwd(), "/public/uploadedImages");
+    if (image !== null) {
+      const imagePath = path.join(process.cwd(), "/public/uploadedImages");
 
-    const fileName = Date.now().toString() + "_" + image?.name;
-    const filePath = path.join(imagePath, fileName);
+      const fileName = Date.now().toString() + "_" + image?.name;
+      const filePath = path.join(imagePath, fileName);
 
-    try {
-      await fs.readdir(imagePath);
-    } catch (error) {
-      await fs.mkdir(imagePath);
-    }
+      try {
+        await fs.readdir(imagePath);
+      } catch (error) {
+        await fs.mkdir(imagePath);
+      }
 
-    try {
-      const bytes = await image.arrayBuffer();
-      const buffer = Buffer.from(bytes);
-      await fs.writeFile(filePath, buffer);
-      savedImagePath = "/uploadedImages/" + fileName;
-    } catch (error) {
-      return { error: "Pildi salvestamisel tekkis probleem, proovige uuesti." };
+      try {
+        const bytes = await image.arrayBuffer();
+        const buffer = Buffer.from(bytes);
+        await fs.writeFile(filePath, buffer);
+        savedImagePath = "/uploadedImages/" + fileName;
+      } catch (error) {
+        return {
+          error: "Pildi salvestamisel tekkis probleem, proovige uuesti.",
+        };
+      }
     }
   }
 
@@ -77,9 +83,15 @@ export async function updateItem(
     const updateData: any = {
       name: result.data.name,
       topCategory: result.data.topCategory,
-      categoryId: Number(categoryIdNumber),
-      price: Number(result.data.price),
-      discountPrice: Number(result.data.discountPrice),
+      categoryId: categoryIdNumber
+        ? Number(categoryIdNumber)
+        : result.data.categoryId,
+      price: result.data.price ? Number(result.data.price) : result.data.price,
+      discountPrice:
+        result.data.discountPrice !== null &&
+        result.data.discountPrice !== undefined
+          ? Number(result.data.discountPrice)
+          : result.data.discountPrice,
       image: savedImagePath,
     };
 
@@ -113,6 +125,7 @@ export async function updateItem(
         })),
       };
     }
+
     const updatedItem = await prisma.item.update({
       where: { id: numberId },
       data: updateData,

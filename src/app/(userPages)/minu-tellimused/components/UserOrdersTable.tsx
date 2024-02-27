@@ -26,26 +26,22 @@ import {
 } from "@tanstack/react-table";
 import { MoreHorizontalIcon } from "lucide-react";
 import React, { useState } from "react";
-import DeleteConfirmationModal from "../../components/DeleteConfirmationModal";
-import { deleteOrder } from "../action";
 import { toast } from "sonner";
-import OrderDetailModal from "./OrderDetailModal";
 import { statusToText } from "@/utils/statusToText";
-import { getOrders } from "@/lib/shared/actions/actions";
+import OrderDetailModal from "@/app/admin/tellimused/components/OrderDetailModal";
+import { getUserOrders } from "../action";
 
-export default function OrdersTable() {
+export default function UserOrdersTable() {
   const {
     data: orderData,
     error: orderError,
     isLoading: orderIsLoading,
-    refetch,
   } = useQuery({
-    queryKey: ["orders"],
-    queryFn: () => getOrders(),
+    queryKey: ["userOrders"],
+    queryFn: () => getUserOrders(),
   });
 
   const [activeItem, setActiveItem] = useState("");
-  const [openConfirmationModal, setOpenConfirmationModal] = useState(false);
   const [openDetailModal, setOpenDetailModal] = useState(false);
 
   const columns: ColumnDef<OrderWithItemsAndAddons>[] = [
@@ -88,15 +84,6 @@ export default function OrdersTable() {
             >
               Vaata detaile
             </DropdownMenuItem>
-            <DropdownMenuItem
-              className="hover:cursor-pointer"
-              onClick={() => {
-                setActiveItem(row.original.id);
-                setOpenConfirmationModal(true);
-              }}
-            >
-              Kustuta
-            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       ),
@@ -115,27 +102,8 @@ export default function OrdersTable() {
   if (orderIsLoading) return <div>Laeb...</div>;
   if (!orderData?.data) return <div>Viga tellimuste kättesaamises.</div>;
 
-  async function handleOrderDelete(id: string) {
-    await deleteOrder(id)
-      .then((data) => {
-        if (data.error) {
-          toast.error(data.error as any);
-          return;
-        }
-        toast.success("Tellimus edukalt kustutatud");
-        refetch();
-      })
-      .catch((error) => toast.error("Viga tellimuse kustutamisel:" + error));
-  }
-
   return (
     <div>
-      <DeleteConfirmationModal
-        open={openConfirmationModal}
-        setOpen={setOpenConfirmationModal}
-        onDelete={() => handleOrderDelete(activeItem)}
-      ></DeleteConfirmationModal>
-
       <OrderDetailModal
         open={openDetailModal}
         setOpen={setOpenDetailModal}

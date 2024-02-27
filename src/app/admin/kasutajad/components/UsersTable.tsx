@@ -50,7 +50,11 @@ export default function UsersTable() {
 
   async function handleUserDelete(id: string) {
     await deleteUser(id)
-      .then(() => {
+      .then((data) => {
+        if (data.error) {
+          toast.error(data.error as any);
+          return;
+        }
         toast.success("Kasutaja kustutatud");
         refetch();
       })

@@ -49,9 +49,14 @@ export default function IngredientTable() {
   const [initialValues, setInitialValues] = useState<InitialValues | undefined>(
     undefined
   );
+
   async function handleIngredientDelete(id: number) {
     await deleteIngredient(id)
-      .then(() => {
+      .then((data) => {
+        if (data.error) {
+          toast.error(data.error as any);
+          return;
+        }
         toast.success("Koostiosa kustutatud.");
         refetch();
       })

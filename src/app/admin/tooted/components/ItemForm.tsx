@@ -47,7 +47,8 @@ const ImageSchema = z
       message: "Peab olema pildifail.",
     }
   )
-  .optional();
+  .optional()
+  .nullable();
 
 const SizeSchema = z.object({
   name: z.nativeEnum(Sizes),
@@ -60,10 +61,10 @@ const ItemSchema = z.object({
   }),
   image: ImageSchema,
   price: z.string().min(1, { message: "Hind peab olema" }),
-  discountPrice: z.string().optional(),
-  incredients: z.array(z.string()).optional(),
-  addons: z.array(z.string()).optional(),
-  sizes: z.array(SizeSchema).optional(),
+  discountPrice: z.string().optional().nullable(),
+  incredients: z.array(z.string()).optional().nullable(),
+  addons: z.array(z.string()).optional().nullable(),
+  sizes: z.array(SizeSchema).optional().nullable(),
   categoryId: z.string().min(1, { message: "Kategooria peab olema" }),
   topCategory: z.nativeEnum(TopCategory),
 });
@@ -82,6 +83,7 @@ export default function ItemForm({
   //Fix for react-select
   const [isMounted, setIsMounted] = useState(false);
   const [optionSelected, setSelected] = useState<Option[] | null>();
+  const [updateImage, setUpdateImage] = useState(false);
 
   useEffect(() => setIsMounted(true), []);
 
@@ -138,6 +140,10 @@ export default function ItemForm({
   const defaultValues: z.infer<typeof ItemSchema> = initialValues
     ? {
         ...initialValues,
+        discountPrice:
+          initialValues.discountPrice === null
+            ? undefined
+            : initialValues.discountPrice,
       }
     : {
         name: "",
@@ -164,24 +170,39 @@ export default function ItemForm({
       if (values.name !== initialValues.name) updatedData.name = values.name;
       if (values.price !== initialValues.price)
         updatedData.price = values.price;
-      if (values.discountPrice !== initialValues.discountPrice)
-        updatedData.discountPrice = values.discountPrice;
+      if (values.discountPrice !== initialValues.discountPrice) {
+        if (values.discountPrice === "") {
+          updatedData.discountPrice = null;
+        } else updatedData.discountPrice = values.discountPrice;
+      }
       if (values.topCategory !== initialValues.topCategory)
         updatedData.topCategory = values.topCategory;
       if (values.categoryId !== initialValues.categoryId)
         updatedData.categoryId = values.categoryId;
-      if (values.image !== initialValues.image)
-        updatedData.image = values.image;
-      if (!arraysAreEqual(values.incredients, initialValues.incredients))
-        updatedData.incredients = values.incredients;
-      if (!arraysAreEqual(values.addons, initialValues.addons))
-        updatedData.addons = values.addons;
+      if (updateImage) {
+        if (values.image === undefined) {
+          updatedData.image = null;
+        } else updatedData.image = values.image;
+      }
+      if (!arraysAreEqual(values.incredients, initialValues.incredients)) {
+        if (values.incredients === undefined) {
+          updatedData.incredients = null;
+        } else updatedData.incredients = values.incredients;
+      }
+      if (!arraysAreEqual(values.addons, initialValues.addons)) {
+        if (values.addons === undefined) {
+          updatedData.addons = null;
+        } else updatedData.addons = values.addons;
+      }
       if (
         values.sizes &&
         initialValues.sizes &&
         !arraysOfObjectsAreEqual(values.sizes, initialValues.sizes)
-      )
-        updatedData.sizes = values.sizes;
+      ) {
+        if (values.sizes === undefined) {
+          updatedData.sizes = null;
+        } else updatedData.sizes = values.sizes;
+      }
 
       if (Object.keys(updatedData).length === 0) {
         toast.info("Muudatusi ei ole.");
@@ -189,26 +210,34 @@ export default function ItemForm({
       }
 
       const imageData = new FormData();
-      if (values.image) {
-        imageData.append("file", values.image, values.image.name);
+      if (updatedData.image && updateImage) {
+        imageData.append("file", updatedData.image, updatedData.image.name);
 
+        imageData.append("oldImage", oldImage ? oldImage : "");
+      } else if (updateImage) {
         imageData.append("oldImage", oldImage ? oldImage : "");
       }
 
       const sendData = {
         image: imageData,
-        name: values.name,
-        price: values.price,
-        discountPrice: values.discountPrice,
-        incredients: values.incredients,
-        addons: values.addons,
-        sizes: values.sizes,
-        categoryId: values.categoryId,
-        topCategory: values.topCategory,
+        name: updatedData.name,
+        price: updatedData.price,
+        discountPrice: updatedData.discountPrice,
+        incredients: updatedData.incredients,
+        addons: updatedData.addons,
+        sizes: updatedData.sizes,
+        categoryId: updatedData.categoryId,
+        topCategory: updatedData.topCategory,
       };
 
       await updateItem(id, sendData)
-        .then(() => toast.success("Toode uuendatud"))
+        .then((data) => {
+          if (data.error) {
+            toast.error(data.error as any);
+            return;
+          }
+          toast.success("Toode uuendatud");
+        })
         .catch((error) => toast.error("Viga toote uuendamisel: " + error));
 
       return;
@@ -232,7 +261,11 @@ export default function ItemForm({
         topCategory: values.topCategory,
       },
     })
-      .then(() => {
+      .then((data) => {
+        if (data?.error) {
+          toast.error(data.error as any);
+          return;
+        }
         toast.success("Uus toode lisatud");
       })
       .catch((error) => {
@@ -270,12 +303,26 @@ export default function ItemForm({
               <FormItem>
                 <FormLabel>Toote pilt</FormLabel>
                 <FormControl>
-                  <Input
-                    {...fieldProps}
-                    type="file"
-                    accept="image/*"
-                    onChange={(event) => onChange(event.target.files?.[0])}
-                  />
+                  <div>
+                    <Input
+                      {...fieldProps}
+                      type="file"
+                      accept="image/*"
+                      onChange={(event) => onChange(event.target.files?.[0])}
+                    />
+                    {initialValues && (
+                      <div>
+                        <label>
+                          <input
+                            type="checkbox"
+                            checked={updateImage}
+                            onChange={(e) => setUpdateImage(e.target.checked)}
+                          />
+                          Kas soovite pilti uuendada?
+                        </label>
+                      </div>
+                    )}
+                  </div>
                 </FormControl>
                 <FormDescription>Sisestage toote pilt.</FormDescription>
                 <FormMessage />
@@ -301,11 +348,16 @@ export default function ItemForm({
           <FormField
             control={form.control}
             name="discountPrice"
-            render={({ field }) => (
+            render={({ field: { value, onChange, ...fieldProps } }) => (
               <FormItem>
                 <FormLabel>Toote soodushind</FormLabel>
                 <FormControl>
-                  <Input placeholder="60" type="number" {...field} />
+                  <Input
+                    placeholder="60"
+                    value={value ?? ""}
+                    onChange={onChange}
+                    {...fieldProps}
+                  />
                 </FormControl>
                 <FormDescription>
                   Sisestage toote soodushind sentides.
@@ -508,7 +560,7 @@ export default function ItemForm({
             )}
           />
 
-          <Button type="submit">{id ? "Uuenda toode" : "Lisa tood"}</Button>
+          <Button type="submit">{id ? "Uuenda toode" : "Lisa toode"}</Button>
         </form>
       </Form>
     </div>

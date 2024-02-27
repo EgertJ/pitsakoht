@@ -51,7 +51,7 @@ export default function UserUpdateForm({
     if (initialValues) {
       form.reset(initialValues);
     }
-  }, [initialValues]);
+  }, [initialValues, open]);
 
   const defaultValues: z.infer<typeof UserSchema> = {
     ...initialValues,
@@ -93,7 +93,11 @@ export default function UserUpdateForm({
     }
 
     await updateUser(id, updatedData)
-      .then(() => {
+      .then((data) => {
+        if (data.error) {
+          toast.error(data.error as any);
+          return;
+        }
         toast.success("Kasutaja andmed uuendatud");
         refetch();
       })

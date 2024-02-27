@@ -35,7 +35,11 @@ export default function PizzaMaking({
 }) {
   const [count, setCount] = useState<number>(cartItem ? cartItem.quantity : 1);
   const [finalPrice, setFinalPrice] = useState<number>(
-    cartItem ? cartItem.price * cartItem.quantity : params.itemPrice
+    cartItem
+      ? cartItem.price * cartItem.quantity
+      : params.itemDiscountPrice
+      ? params.itemDiscountPrice
+      : params.itemPrice
   );
   const [selectedSize, setSelectedSize] = useState<{
     size: Sizes;
@@ -240,7 +244,12 @@ export default function PizzaMaking({
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-8 ">
-          <p className="text-red-500">{(params.itemPrice / 100).toFixed(2)}€</p>
+          <p className="text-red-500">
+            {params.itemDiscountPrice
+              ? (params.itemDiscountPrice / 100).toFixed(2)
+              : (params.itemPrice / 100).toFixed(2)}
+            €
+          </p>
           <p>{params.itemIngredients.join(", ")}</p>
 
           <div className="flex flex-col gap-4">
