@@ -12,10 +12,46 @@ import { TimeSpan, createDate, isWithinExpirationDate } from "oslo";
 import { generateRandomString, alphabet } from "oslo/crypto";
 import { cache } from "react";
 import { ActionResult } from "next/dist/server/app-render/types";
+import nodemailer from "nodemailer";
 
 import type { Session, User } from "lucia";
 
 import { loginSchema, registerSchema, codeSchema } from "@/lib/types";
+
+const email = process.env.EMAIL;
+const password = process.env.EMAIL_PASSWORD;
+
+const transporter = nodemailer.createTransport({
+  service: "Gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: true,
+  auth: {
+    user: email,
+    pass: password,
+  },
+});
+
+export async function sendVertificationEmail(
+  sendEmail: string,
+  verificationCode: string
+) {
+  try {
+    const mailOptions: Object = {
+      from: email,
+      to: sendEmail,
+      subject: "Pitsakoht e-maili kinnituskood",
+      text: verificationCode,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+
+    return { message: "Meil saadetud" };
+  } catch (e) {
+    console.error(e);
+    return { error: e };
+  }
+}
 
 export const getUser = cache(
   async (): Promise<
@@ -172,6 +208,13 @@ export async function generateEmailVerificationCode(
       expires_at: createDate(new TimeSpan(5, "m")),
     },
   });
+
+  try {
+    await sendVertificationEmail(email, code);
+  } catch (error) {
+    console.log(error);
+  }
+
   return code;
 }
 
