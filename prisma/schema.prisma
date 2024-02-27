@@ -114,6 +114,7 @@ model Order {
   takeaway Boolean
   status OrderStatus
   items    OrderItem[]
+  usedCouponCode String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

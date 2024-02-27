@@ -250,6 +250,7 @@ export type OrderType = {
   status: OrderStatus;
   items: CartItem[];
   takeaway: boolean;
+  usedCoupon: string | null;
 };
 
 export type OrderWithItemsAndAddons = Prisma.OrderGetPayload<{

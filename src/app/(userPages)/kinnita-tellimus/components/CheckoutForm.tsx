@@ -118,6 +118,7 @@ export default function CheckoutForm({ user }: { user: User | null }) {
       status: "pending",
       items: cart,
       takeaway: toggleOn,
+      usedCoupon: itemDiscount || globalDiscount ? coupon : null,
     };
 
     const order = await createOrder(newOrder);

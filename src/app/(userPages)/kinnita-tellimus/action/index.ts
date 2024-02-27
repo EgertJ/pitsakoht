@@ -22,6 +22,7 @@ export async function createOrder(order: OrderType) {
         total: order.total,
         takeaway: order.takeaway,
         status: order.status,
+        usedCouponCode: order.usedCoupon,
         items: {
           create: order.items.map((item) => ({
             itemId: item.item.itemId,
@@ -38,7 +39,16 @@ export async function createOrder(order: OrderType) {
         },
       },
     });
-
+    if (order.usedCoupon && order.userId) {
+      await prisma.coupon.update({
+        where: { code: order.usedCoupon },
+        data: {
+          usedBy: {
+            connect: [{ id: order.userId }],
+          },
+        },
+      });
+    }
     orderId = newOrder.id;
   } catch (error) {
     return { error: "Ostu sooritamisel tekkis viga. Proovige uuesti." };
@@ -55,6 +65,16 @@ export async function validateCoupon(code: string) {
   if (!user.emailVerified) return { error: "Pole lubatud!" };
   try {
     const coupon = await prisma.coupon.findFirst({ where: { code: code } });
+
+    const userCoupons = await prisma.user.findFirst({
+      where: { id: user.id },
+      select: { usedCoupons: { select: { code: true } } },
+    });
+
+    const isCouponUsed = userCoupons?.usedCoupons.some(
+      (usedCoupon) => usedCoupon.code === code
+    );
+    if (isCouponUsed) return { error: "Kupong on juba kasutatud!" };
 
     if (!coupon) return { error: "Kupongi ei leitud!" };
 
