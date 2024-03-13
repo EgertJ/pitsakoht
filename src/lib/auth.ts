@@ -1,7 +1,7 @@
 import { Lucia } from "lucia";
 import prisma from "@/lib/db";
 import { PrismaAdapter } from "@lucia-auth/adapter-prisma";
-import { Coupon, Role } from "@prisma/client";
+import {  Role } from "@prisma/client";
 
 const client = prisma;
 

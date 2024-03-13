@@ -22,14 +22,15 @@ import {
   
   verifyEmailToken,
 } from "@/lib/shared/actions/actions";
-import { validateRequest } from "@/lib/getUser";
+import { User } from "lucia";
+
 const codeSchema = z.object({
   code: z.string().min(8, {
     message: "Kood on vähemalt 8 tähte",
   }),
 });
 
-export default function ValidationInput() {
+export default function ValidationInput({user} : {user: User | null}) {
   const form = useForm<z.infer<typeof codeSchema>>({
     resolver: zodResolver(codeSchema),
     defaultValues: {
@@ -40,7 +41,6 @@ export default function ValidationInput() {
   const [error, setError] = useState<string>();
 
   async function generateNewCode() {
-    const { user } = await validateRequest();
     if (user) await generateEmailVerificationCode(user.id, user.email);
   }
 

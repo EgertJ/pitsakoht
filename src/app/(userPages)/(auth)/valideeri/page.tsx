@@ -13,7 +13,7 @@ export default async function ValideeriPage() {
         <h1 className="text-5xl font-bold pb-8">Valideeri kood</h1>
       </div>
 
-      <ValidationInput></ValidationInput>
+      <ValidationInput user={user}></ValidationInput>
     </div>
   );
 }
