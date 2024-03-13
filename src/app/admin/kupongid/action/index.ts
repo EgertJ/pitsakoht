@@ -1,11 +1,11 @@
 "use server";
 
-import { getUser } from "@/lib/shared/actions/actions";
+import { validateRequest } from "@/lib/getUser";
 import prisma from "@/lib/db";
 import { z } from "zod";
 import { CouponSchema, UpdateCouponSchema } from "@/lib/types";
 export async function getCoupons() {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (!user) return { error: "Pole lubatud!" };
   if (!user.emailVerified) return { error: "Pole lubatud!" };
@@ -31,7 +31,7 @@ export async function getItems() {
 }
 
 export async function createCoupon(values: z.infer<typeof CouponSchema>) {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
   const result = CouponSchema.safeParse(values);
 
   if (!result.success) return { error: "Tekkis tõrge. Proovige uuesti." };
@@ -63,7 +63,7 @@ export async function updateCoupon(
   const result = UpdateCouponSchema.safeParse(updatedData);
 
   if (!result.success) return { error: "Tekkis tõrge. Proovige uuesti." };
-  const { user } = await getUser();
+  const { user } = await validateRequest();
   if (!user) return { error: "Pole lubatud!" };
   if (!user.emailVerified) return { error: "Pole lubatud!" };
   if (user.role !== "ADMIN") return { error: "Pole lubatud!" };
@@ -81,7 +81,7 @@ export async function updateCoupon(
 }
 
 export async function deleteCoupon(id: number) {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
   if (!user) return { error: "Pole lubatud!" };
   if (!user.emailVerified) return { error: "Pole lubatud!" };
   if (user.role !== "ADMIN") return { error: "Pole lubatud!" };

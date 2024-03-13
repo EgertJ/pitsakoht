@@ -1,4 +1,4 @@
-import { getUser } from "@/lib/shared/actions/actions";
+import { validateRequest } from "@/lib/getUser";
 import {
   dehydrate,
   HydrationBoundary,
@@ -10,7 +10,7 @@ import { getItems } from "./action";
 import ItemsTable from "./components/ItemsTable";
 
 export default async function TootedPage() {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (!user) redirect("/");
   if (!user.emailVerified) redirect("/");

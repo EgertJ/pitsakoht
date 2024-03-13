@@ -5,8 +5,9 @@ import {
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query";
-import { getOrders, getUser } from "@/lib/shared/actions/actions";
+import { getOrders } from "@/lib/shared/actions/actions";
 import { redirect } from "next/navigation";
+import { validateRequest } from "@/lib/getUser";
 
 export default async function KöökPage() {
   const queryClient = new QueryClient();
@@ -15,7 +16,7 @@ export default async function KöökPage() {
     queryFn: () => getOrders(),
   });
 
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (!user) redirect("/");
   if (!user.emailVerified) redirect("/");

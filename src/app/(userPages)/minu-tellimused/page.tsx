@@ -1,4 +1,4 @@
-import { getUser } from "@/lib/shared/actions/actions";
+import { validateRequest } from "@/lib/getUser";
 import { redirect } from "next/navigation";
 import React from "react";
 import {
@@ -10,7 +10,7 @@ import { getUserOrders } from "./action";
 import UserOrdersTable from "./components/UserOrdersTable";
 
 export default async function MinuTellimusedPage() {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
   if (!user) redirect("/");
   if (!user.emailVerified) redirect("/valideeri");
 

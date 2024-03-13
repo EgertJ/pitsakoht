@@ -5,7 +5,7 @@ import {
   dehydrate,
 } from "@tanstack/react-query";
 import { getOrder } from "./action";
-import { getUser } from "@/lib/shared/actions/actions";
+import { validateRequest } from "@/lib/getUser";
 import { redirect } from "next/navigation";
 
 export default async function TellimusPage({
@@ -13,7 +13,7 @@ export default async function TellimusPage({
 }: {
   params: { id: string };
 }) {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (user && !user.emailVerified) redirect("/valideeri");
   const queryClient = new QueryClient();

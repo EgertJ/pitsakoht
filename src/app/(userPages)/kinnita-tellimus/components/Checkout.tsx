@@ -1,10 +1,10 @@
 import React from "react";
 import CartItems from "./CartItems";
 import CheckoutForm from "./CheckoutForm";
-import { getUser } from "@/lib/shared/actions/actions";
+import { validateRequest } from "@/lib/getUser";
 
 export default async function Checkout() {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   return (
     <div className="px-3 md:px-24 lg:px-52 py-24">

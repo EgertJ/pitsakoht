@@ -1,6 +1,6 @@
 "use server";
 import prisma from "@/lib/db";
-import { getUser } from "@/lib/shared/actions/actions";
+import { validateRequest } from "@/lib/getUser";
 import fs from "fs/promises";
 import path from "path";
 export async function getItems() {
@@ -21,7 +21,7 @@ export async function getItems() {
 }
 
 export async function deleteItem(id: number) {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (!user) return { error: "Pole lubatud!" };
   if (!user.emailVerified) return { error: "Pole lubatud!" };

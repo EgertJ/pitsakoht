@@ -1,10 +1,10 @@
 "use server";
 
 import prisma from "@/lib/db";
-import { getUser } from "@/lib/shared/actions/actions";
+import { validateRequest } from "@/lib/getUser";
 
 export async function getLatestOrders(limit: number) {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (!user) return { error: "Pole lubatud!" };
   if (!user.emailVerified) return { error: "Pole lubatud!" };
@@ -23,7 +23,7 @@ export async function getLatestOrders(limit: number) {
 }
 
 export async function getOrdersCount() {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (!user) return { error: "Pole lubatud!" };
   if (!user.emailVerified) return { error: "Pole lubatud!" };
@@ -37,7 +37,7 @@ export async function getOrdersCount() {
   }
 }
 export async function getItemsCount() {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (!user) return { error: "Pole lubatud!" };
   if (!user.emailVerified) return { error: "Pole lubatud!" };
@@ -51,7 +51,7 @@ export async function getItemsCount() {
   }
 }
 export async function getUsersCount() {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (!user) return { error: "Pole lubatud!" };
   if (!user.emailVerified) return { error: "Pole lubatud!" };

@@ -1,7 +1,7 @@
 "use server";
 
 import prisma from "@/lib/db";
-import { getUser } from "@/lib/shared/actions/actions";
+import { validateRequest } from "@/lib/getUser";
 import { ItemSchema, UpdateItemSchema } from "@/lib/types";
 import path from "path";
 import { z } from "zod";
@@ -27,7 +27,7 @@ export async function updateItem(
   id: string,
   updatedItems: Partial<z.infer<typeof UpdateItemSchema>>
 ) {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (!user) return { error: "Pole lubatud!" };
   if (!user.emailVerified) return { error: "Pole lubatud!" };

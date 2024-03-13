@@ -5,12 +5,12 @@ import {
   dehydrate,
 } from "@tanstack/react-query";
 import { redirect } from "next/navigation";
-import { getUser } from "@/lib/shared/actions/actions";
+import { validateRequest } from "@/lib/getUser";
 import { getCoupons, getItems } from "./action";
 import CouponTable from "./components/CouponTable";
 import { getUsers } from "../kasutajad/action";
 export default async function KupongidPage() {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (!user) redirect("/");
   if (!user.emailVerified) redirect("/");

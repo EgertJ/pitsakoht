@@ -1,10 +1,10 @@
 "use server";
 
-import { getUser } from "@/lib/shared/actions/actions";
+import { validateRequest } from "@/lib/getUser";
 import prisma from "@/lib/db";
 
 export async function getUserOrders() {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (!user) return { error: "Ei ole lubatud!" };
 

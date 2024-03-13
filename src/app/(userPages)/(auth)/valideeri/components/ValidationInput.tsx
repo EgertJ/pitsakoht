@@ -19,10 +19,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import {
   generateEmailVerificationCode,
-  getUser,
+  
   verifyEmailToken,
 } from "@/lib/shared/actions/actions";
-
+import { validateRequest } from "@/lib/getUser";
 const codeSchema = z.object({
   code: z.string().min(8, {
     message: "Kood on vähemalt 8 tähte",
@@ -40,7 +40,7 @@ export default function ValidationInput() {
   const [error, setError] = useState<string>();
 
   async function generateNewCode() {
-    const { user } = await getUser();
+    const { user } = await validateRequest();
     if (user) await generateEmailVerificationCode(user.id, user.email);
   }
 

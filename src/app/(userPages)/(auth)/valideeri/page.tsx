@@ -1,10 +1,10 @@
-import { getUser } from "@/lib/shared/actions/actions";
+import { validateRequest } from "@/lib/getUser";
 import ValidationInput from "@/app/(userPages)/(auth)/valideeri/components/ValidationInput";
 import { redirect } from "next/navigation";
 import React from "react";
 
 export default async function ValideeriPage() {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (user && user.emailVerified) redirect("/");
   return (

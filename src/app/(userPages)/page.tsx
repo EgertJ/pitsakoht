@@ -7,11 +7,11 @@ import {
 } from "@tanstack/react-query";
 import ShoppingCartButton from "@/components/ui/ShoppingCartButton";
 import { getCategories } from "./action";
-import { getUser } from "@/lib/shared/actions/actions";
+import { validateRequest } from "@/lib/getUser";
 import { redirect } from "next/navigation";
 
 export default async function Home() {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (user && !user.emailVerified) redirect("/valideeri");
 

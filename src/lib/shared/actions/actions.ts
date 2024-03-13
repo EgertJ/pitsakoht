@@ -10,13 +10,12 @@ import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { TimeSpan, createDate, isWithinExpirationDate } from "oslo";
 import { generateRandomString, alphabet } from "oslo/crypto";
-import { cache } from "react";
+
 import { ActionResult } from "next/dist/server/app-render/types";
 import nodemailer from "nodemailer";
 
-import type { Session, User } from "lucia";
-
 import { loginSchema, registerSchema, codeSchema } from "@/lib/types";
+import { validateRequest } from "@/lib/getUser";
 
 const email = process.env.EMAIL;
 const password = process.env.EMAIL_PASSWORD;
@@ -52,39 +51,6 @@ export async function sendVertificationEmail(
     return { error: e };
   }
 }
-
-export const getUser = cache(
-  async (): Promise<
-    { user: User; session: Session } | { user: null; session: null }
-  > => {
-    const sessionId = cookies().get(lucia.sessionCookieName)?.value ?? null;
-    if (!sessionId)
-      return {
-        user: null,
-        session: null,
-      };
-    const result = await lucia.validateSession(sessionId);
-    try {
-      if (result.session && result.session.fresh) {
-        const sessionCookie = lucia.createSessionCookie(result.session.id);
-        cookies().set(
-          sessionCookie.name,
-          sessionCookie.value,
-          sessionCookie.attributes
-        );
-      }
-      if (!result.session) {
-        const sessionCookie = lucia.createBlankSessionCookie();
-        cookies().set(
-          sessionCookie.name,
-          sessionCookie.value,
-          sessionCookie.attributes
-        );
-      }
-    } catch {}
-    return result;
-  }
-);
 
 export async function signup({
   data,
@@ -172,7 +138,7 @@ export async function signin({ data }: { data: z.infer<typeof loginSchema> }) {
 }
 
 export async function logout(): Promise<ActionResult> {
-  const { session } = await getUser();
+  const { session } = await validateRequest();
 
   if (!session) {
     return {
@@ -223,7 +189,7 @@ export async function verifyEmailToken({
 }: {
   data: z.infer<typeof codeSchema>;
 }) {
-  const user = await getUser();
+  const user = await validateRequest();
   if (!user) {
     return { error: "Ei leia sessiooni." };
   }
@@ -272,7 +238,7 @@ export async function verifyEmailToken({
 }
 
 export async function getOrders() {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (!user) return { error: "Pole lubatud!" };
   if (!user.emailVerified) return { error: "Pole lubatud!" };

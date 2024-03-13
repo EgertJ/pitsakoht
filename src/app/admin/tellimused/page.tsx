@@ -1,4 +1,5 @@
-import { getOrders, getUser } from "@/lib/shared/actions/actions";
+import { getOrders } from "@/lib/shared/actions/actions";
+import { validateRequest } from "@/lib/getUser";
 import {
   HydrationBoundary,
   QueryClient,
@@ -9,7 +10,7 @@ import React from "react";
 import OrdersTable from "./components/OrdersTable";
 
 export default async function page() {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (!user) redirect("/");
   if (!user.emailVerified) redirect("/");

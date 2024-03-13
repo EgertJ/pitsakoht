@@ -1,10 +1,10 @@
 import React from "react";
 import PrivacyPolicy from "./components/PrivacyPolicy";
-import { getUser } from "@/lib/shared/actions/actions";
+import { validateRequest } from "@/lib/getUser";
 import { redirect } from "next/navigation";
 
 export default async function PrivaatsuspoliitikaPage() {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (user && !user.emailVerified) redirect("/valideeri");
 

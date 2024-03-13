@@ -1,4 +1,4 @@
-import { getUser } from "@/lib/shared/actions/actions";
+import { validateRequest } from "@/lib/getUser";
 import {
   HydrationBoundary,
   QueryClient,
@@ -10,7 +10,7 @@ import { getIngredients } from "../tooted/action";
 import IngredientTable from "./components/IngredientTable";
 
 export default async function KoostiosadPage() {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (!user) redirect("/");
   if (!user.emailVerified) redirect("/");

@@ -1,11 +1,11 @@
 "use server";
 import prisma from "@/lib/db";
-import { getUser } from "@/lib/shared/actions/actions";
+import { validateRequest } from "@/lib/getUser";
 import { IngredientSchema } from "@/lib/types";
 import { z } from "zod";
 
 export async function deleteIngredient(id: number) {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (!user) return { error: "Pole lubatud!" };
   if (!user.emailVerified) return { error: "Pole lubatud!" };
@@ -21,7 +21,7 @@ export async function deleteIngredient(id: number) {
 }
 
 export async function addIngredient(values: z.infer<typeof IngredientSchema>) {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (!user) return { error: "Pole lubatud!" };
   if (!user.emailVerified) return { error: "Pole lubatud!" };

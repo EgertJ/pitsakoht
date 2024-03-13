@@ -2,8 +2,8 @@
 import prisma from "@/lib/db";
 import {
   generateEmailVerificationCode,
-  getUser,
 } from "@/lib/shared/actions/actions";
+import { validateRequest } from "@/lib/getUser";
 import { updateSchema } from "@/lib/types";
 import { z } from "zod";
 import { Argon2id } from "oslo/password";
@@ -14,7 +14,7 @@ export async function updateUser(
   const result = updateSchema.safeParse(updatedItems);
   if (!result.success) return { error: "Tekkis tõrge. Proovige uuesti." };
   if (!result.data) return { error: "Tekkis tõrge. Proovige uuesti." };
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (!user) return { error: "Pole lubatud!" };
   if (user && !user.emailVerified) return { error: "Pole lubatud!" };

@@ -1,10 +1,10 @@
 import LoginForm from "@/app/(userPages)/(auth)/logi-sisse/components/LoginForm";
 import React from "react";
-import { getUser } from "@/lib/shared/actions/actions";
 import { redirect } from "next/navigation";
+import { validateRequest } from "@/lib/getUser";
 
 export default async function LogiSissePage() {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (user) redirect("/");
 

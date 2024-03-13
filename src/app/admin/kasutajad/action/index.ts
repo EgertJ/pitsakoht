@@ -1,12 +1,12 @@
 "use server";
 import prisma from "@/lib/db";
 import { lucia } from "@/lib/auth";
-import { getUser } from "@/lib/shared/actions/actions";
+import { validateRequest } from "@/lib/getUser";
 import { z } from "zod";
 import { UserSchema } from "@/lib/types";
 
 export async function getUsers() {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (!user) return { error: "Pole lubatud!" };
   if (!user.emailVerified) return { error: "Pole lubatud!" };
@@ -42,7 +42,7 @@ export async function updateUser(
 }
 
 export async function deleteUser(id: string) {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (!user) return { error: "Pole lubatud!" };
   if (!user.emailVerified) return { error: "Pole lubatud!" };

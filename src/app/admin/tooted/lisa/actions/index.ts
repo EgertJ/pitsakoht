@@ -5,10 +5,10 @@ import { z } from "zod";
 import path from "path";
 import fs from "fs/promises";
 import prisma from "@/lib/db";
-import { getUser } from "@/lib/shared/actions/actions";
+import { validateRequest } from "@/lib/getUser";
 
 export async function addItem({ data }: { data: z.infer<typeof ItemSchema> }) {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (!user) return { error: "Pole lubatud!" };
   if (!user.emailVerified) return { error: "Pole lubatud!" };

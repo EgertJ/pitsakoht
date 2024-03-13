@@ -1,10 +1,10 @@
 import React from "react";
 import Contact from "@/app/(userPages)/kontakt/components/Contact";
-import { getUser } from "@/lib/shared/actions/actions";
+import { validateRequest } from "@/lib/getUser";
 import { redirect } from "next/navigation";
 
 export default async function KontaktPage() {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (user && !user.emailVerified) redirect("/valideeri");
   return (

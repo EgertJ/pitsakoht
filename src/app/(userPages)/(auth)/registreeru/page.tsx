@@ -1,10 +1,10 @@
 import RegisterForm from "@/app/(userPages)/(auth)/registreeru/components/RegisterForm";
 import React from "react";
-import { getUser } from "@/lib/shared/actions/actions";
+import { validateRequest } from "@/lib/getUser";
 import { redirect } from "next/navigation";
 
 export default async function page() {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (user) redirect("/");
 

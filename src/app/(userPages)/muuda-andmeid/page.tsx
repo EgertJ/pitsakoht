@@ -1,10 +1,10 @@
 import React from "react";
 import UserForm from "./components/UserForm";
-import { getUser } from "@/lib/shared/actions/actions";
+import { validateRequest } from "@/lib/getUser";
 import { redirect } from "next/navigation";
 
 export default async function VahetaAndmeidPage() {
-  const { user } = await getUser();
+  const { user } = await validateRequest();
 
   if (!user) redirect("/");
   if (user && !user.emailVerified) redirect("/valideeri");
