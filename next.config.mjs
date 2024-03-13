@@ -4,6 +4,22 @@ const nextConfig = {
     config.externals.push("@node-rs/argon2", "@node-rs/bcrypt");
     return config;
   },
+
+  async headers(){
+    return [
+      {
+        source: '/unustasid-parooli/:slug*',
+        headers: 
+        [
+          {
+          key: 'Referrer-Policy',
+          value: 'no-referrer' 
+          }
+        ]
+      }
+    ]
+
+  },
   experimental: {
     serverActions: {
       allowedOrigins: [

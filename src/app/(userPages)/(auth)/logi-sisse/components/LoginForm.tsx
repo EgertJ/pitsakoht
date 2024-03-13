@@ -88,9 +88,14 @@ export default function LoginForm() {
             {error}
           </div>
         )}
+        <div className="flex gap-4">
         <Link href="/registreeru" className="underline">
           Pole kasutajat? Registreeru siit
         </Link>
+        <Link href="/unustasid-parooli" className="underline">
+          Unustasid parooli?
+        </Link>
+        </div>
       </div>
     </div>
   );

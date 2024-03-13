@@ -9,7 +9,7 @@ import { redirect } from "next/navigation";
 import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { TimeSpan, createDate, isWithinExpirationDate } from "oslo";
-import { generateRandomString, alphabet } from "oslo/crypto";
+import { generateRandomString, alphabet, sha256 } from "oslo/crypto";
 
 import { ActionResult } from "next/dist/server/app-render/types";
 import nodemailer from "nodemailer";

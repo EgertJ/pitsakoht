@@ -183,3 +183,9 @@ model email_verification_code {
   email String
   expires_at DateTime
 }
+
+model password_reset_token {
+  token_hash String @unique
+  user_id String
+  expires_at DateTime
+}

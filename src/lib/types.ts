@@ -162,6 +162,51 @@ export const updateSchema = z
   )
   .optional();
 
+  export const reset_password_schema = z
+  .object({
+    new_password: z
+      .string()
+      .refine(
+        (value) =>
+          value === "" ||
+          (value.length >= 8 &&
+            /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]/.test(value)),
+        {
+          message:
+            "Parool peab olema vähemalt 8 tähemärki ja sisaldama vähemalt ühte tähte ja ühte numbrit, või olema tühi.",
+        }
+      ),
+    new_password_validate: z
+      .string()
+      .refine(
+        (value) =>
+          value === "" ||
+          (value.length >= 8 &&
+            /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]/.test(value)),
+        {
+          message:
+            "Parool peab olema vähemalt 8 tähemärki ja sisaldama vähemalt ühte tähte ja ühte numbrit, või olema tühi.",
+        }
+      ),
+  })
+  .refine(
+    (data) => {
+      if (data.new_password !== undefined) {
+        return data.new_password === data.new_password_validate;
+      }
+      return true;
+    },
+    {
+      message: "Uus parool ei kattu.",
+      path: ["new_password_validate"],
+    }
+  );
+
+  export const forgotPasswordSchema = z.object({
+    email: z.string().email("See ei ole õige e-mail."),
+    
+  });
+
 export const CouponSchema = z
   .object({
     code: z.string().min(1, { message: "Kood on vajalik" }),

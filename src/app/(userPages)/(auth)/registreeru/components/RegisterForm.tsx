@@ -106,9 +106,14 @@ export default function RegisterForm() {
             {error}
           </div>
         )}
+        <div className="flex gap-4">
         <Link href="/logi-sisse" className="underline">
           Juba kasutaja olemas? Logi sisse
         </Link>
+        <Link href="/unustasid-parooli" className="underline">
+          Unustasid parooli?
+        </Link>
+        </div>
       </div>
     </div>
   );
