@@ -216,6 +216,11 @@ export default function PizzaMaking({
       setCount(1);
     }
   };
+
+  // Filter sauces
+  const sauces = params.itemAddons.filter(addon => addon.category === "sauce");
+  // Calculate total count of sauces
+  const sauceCount = sauces.length;
   return (
     <Dialog onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
@@ -340,7 +345,7 @@ export default function PizzaMaking({
                       handleRemoveAddon={handleRemoveSauce}
                       handleUpdateAddon={handleUpdateSauce}
                       showCountSelection={false}
-                      maxAddonCount={3}
+                      maxAddonCount={sauceCount}
                     />
                   </div>
                 );

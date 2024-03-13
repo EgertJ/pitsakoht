@@ -10,9 +10,7 @@ import { validateRequest } from "@/lib/getUser";
 export async function addItem({ data }: { data: z.infer<typeof ItemSchema> }) {
   const { user } = await validateRequest();
 
-  if (!user) return { error: "Pole lubatud!" };
-  if (!user.emailVerified) return { error: "Pole lubatud!" };
-  if (user.role !== "ADMIN") return { error: "Pole lubatud" };
+  if (!user || !user.emailVerified || user.role !== "ADMIN") return { error: "Pole lubatud!" };
 
   const result = ItemSchema.safeParse(data);
 

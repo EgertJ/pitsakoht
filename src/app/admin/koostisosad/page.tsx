@@ -12,9 +12,7 @@ import IngredientTable from "./components/IngredientTable";
 export default async function KoostiosadPage() {
   const { user } = await validateRequest();
 
-  if (!user) redirect("/");
-  if (!user.emailVerified) redirect("/");
-  if (user.role !== "ADMIN") redirect("/");
+  if (!user || !user.emailVerified || user.role !== "ADMIN") redirect("/");
 
   const queryClient = new QueryClient();
 

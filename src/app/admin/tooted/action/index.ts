@@ -23,9 +23,7 @@ export async function getItems() {
 export async function deleteItem(id: number) {
   const { user } = await validateRequest();
 
-  if (!user) return { error: "Pole lubatud!" };
-  if (!user.emailVerified) return { error: "Pole lubatud!" };
-  if (user.role !== "ADMIN") return { error: "Pole lubatud!" };
+  if (!user || !user.emailVerified || user.role !== "ADMIN") return { error: "Pole lubatud!" };
 
   try {
     const deletedItem = await prisma.item.delete({ where: { id: id } });

@@ -12,9 +12,7 @@ import { getUsers } from "../kasutajad/action";
 export default async function KupongidPage() {
   const { user } = await validateRequest();
 
-  if (!user) redirect("/");
-  if (!user.emailVerified) redirect("/");
-  if (user.role !== "ADMIN") redirect("/");
+  if (!user || !user.emailVerified || user.role !== "ADMIN") redirect("/");
 
   const queryClient = new QueryClient();
 

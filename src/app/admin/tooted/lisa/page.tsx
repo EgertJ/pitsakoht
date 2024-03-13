@@ -12,9 +12,7 @@ import { redirect } from "next/navigation";
 export default async function LisaToodePage() {
   const { user } = await validateRequest();
 
-  if (!user) redirect("/");
-  if (!user.emailVerified) redirect("/");
-  if (user.role !== "ADMIN") redirect("/");
+  if (!user || !user.emailVerified || user.role !== "ADMIN") redirect("/");
   const queryClient = new QueryClient();
 
   await queryClient.prefetchQuery({

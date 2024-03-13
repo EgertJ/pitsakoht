@@ -18,9 +18,7 @@ import LatestOrders from "./components/LatestOrders";
 export default async function AdminPage() {
   const { user } = await validateRequest();
 
-  if (!user) redirect("/");
-  if (!user.emailVerified) redirect("/");
-  if (user.role !== "ADMIN") redirect("/");
+  if (!user || !user.emailVerified || user.role !== "ADMIN") redirect("/");
 
   const queryClient = new QueryClient();
 
