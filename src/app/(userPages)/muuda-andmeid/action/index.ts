@@ -53,8 +53,6 @@ export async function updateUser(
       hashed_password: hashedPassword,
       email_verified: result.data.email ? false : true,
     };
-  
-    console.log(updated)
 
     const updatedUser = await prisma.user.update({
       where: { id: dbuser.id },
