@@ -19,12 +19,16 @@ import { validateRequest } from "@/lib/getUser";
 
 const email = process.env.EMAIL;
 const password = process.env.EMAIL_PASSWORD;
+const email_host = process.env.SMTP;
+const email_port = Number(process.env.SMTP_PORT);
+const email_secure = Boolean(process.env.EMAIL_SECURE);
+const email_service = process.env.SMTP_SERVICE;
 
 const transporter = nodemailer.createTransport({
-  service: "Gmail",
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: true,
+  service: email_service,
+  host: email_host,
+  port: email_port,
+  secure: email_secure,
   auth: {
     user: email,
     pass: password,
@@ -78,9 +82,7 @@ export async function signup({
       },
     });
 
-    const verificationCode = await generateEmailVerificationCode(userId, email);
-
-    console.log(verificationCode);
+    generateEmailVerificationCode(userId, email);
 
     const session = await lucia.createSession(userId, {});
     const sessionCookie = lucia.createSessionCookie(session.id);
