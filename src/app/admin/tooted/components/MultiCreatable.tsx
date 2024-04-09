@@ -209,4 +209,5 @@ const MultiSelectable = forwardRef((props: any, ref) => {
   );
 });
 
+MultiSelectable.displayName = "MultiSelectable";
 export default MultiSelectable;

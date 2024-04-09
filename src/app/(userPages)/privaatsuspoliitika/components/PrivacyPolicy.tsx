@@ -109,7 +109,7 @@ export default function PrivacyPolicy() {
       <h4>Küpsised</h4>
       <p>
         Nagu enamus veebilehti, kasutab ka{" "}
-        <a href="https://www.pitsakoht.ee">www.pitsakoht.ee</a> "küpsiseid".
+        <a href="https://www.pitsakoht.ee">www.pitsakoht.ee</a> küpsiseid.
         Küpsis on sisuliselt tekstifail, mis salvestatakse veebisaidi
         külastamisel kasutaja seadmesse. Küpsiste abil määratakse ja
         salvestatakse eelistused, regionaalsed sätted, teenuste kasutamise

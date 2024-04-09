@@ -74,32 +74,6 @@ export default function CouponTable() {
     }
   };
 
-  async function handleCouponDelete(id: number) {
-    await deleteCoupon(id)
-      .then((data) => {
-        if (data.error) {
-          toast.error(data.error as any);
-          return;
-        }
-        toast.success("Kupong kustutatud!");
-        couponRefetch();
-      })
-      .catch((error) => toast.error(error));
-  }
-
-  if (couponError)
-    return <div>Viga tellimuste kättesaamises. + {couponError.message}</div>;
-  if (couponIsLoading) return <div>Laeb...</div>;
-  if (!couponData?.data) return <div>Viga tellimuste kättesaamises.</div>;
-  if (itemError)
-    return <div>Viga toodete kättesaamises. + {itemError.message}</div>;
-  if (itemIsLoading) return <div>Laeb...</div>;
-  if (!itemData?.data) return <div>Viga toodete kättesaamises.</div>;
-  if (userError)
-    return <div>Viga kasutajate kättesaamises. + {userError.message}</div>;
-  if (userIsLoading) return <div>Laeb...</div>;
-  if (!userData?.data) return <div>Viga kastuajate kättesaamises.</div>;
-
   const columns: ColumnDef<Coupon>[] = [
     { accessorKey: "id", header: "Id" },
     { accessorKey: "code", header: "Kood" },
@@ -108,7 +82,7 @@ export default function CouponTable() {
       accessorKey: "itemId",
       header: "Seotud toode",
       accessorFn: (row) => {
-        const item = itemData?.data.find((item) => item.id === row.itemId);
+        const item = itemData?.data?.find((item) => item.id === row.itemId);
         return item ? item.name : "Puudub";
       },
     },
@@ -116,7 +90,7 @@ export default function CouponTable() {
       accessorKey: "userId",
       header: "Seotud kasutaja",
       accessorFn: (row) => {
-        const user = userData?.data.find((user) => user.id === row.userId);
+        const user = userData?.data?.find((user) => user.id === row.userId);
         return user ? user.name : "Puudub";
       },
     },
@@ -168,6 +142,32 @@ export default function CouponTable() {
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   });
+
+  async function handleCouponDelete(id: number) {
+    await deleteCoupon(id)
+      .then((data) => {
+        if (data.error) {
+          toast.error(data.error as any);
+          return;
+        }
+        toast.success("Kupong kustutatud!");
+        couponRefetch();
+      })
+      .catch((error) => toast.error(error));
+  }
+
+  if (couponError)
+    return <div>Viga tellimuste kättesaamises. + {couponError.message}</div>;
+  if (couponIsLoading) return <div>Laeb...</div>;
+  if (!couponData?.data) return <div>Viga tellimuste kättesaamises.</div>;
+  if (itemError)
+    return <div>Viga toodete kättesaamises. + {itemError.message}</div>;
+  if (itemIsLoading) return <div>Laeb...</div>;
+  if (!itemData?.data) return <div>Viga toodete kättesaamises.</div>;
+  if (userError)
+    return <div>Viga kasutajate kättesaamises. + {userError.message}</div>;
+  if (userIsLoading) return <div>Laeb...</div>;
+  if (!userData?.data) return <div>Viga kastuajate kättesaamises.</div>;
 
   return (
     <div>

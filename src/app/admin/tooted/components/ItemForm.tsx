@@ -128,15 +128,6 @@ export default function ItemForm({
     { value: "Else", label: "Muu" },
   ];
 
-  if (ingredientIsLoading || categoryIsLoading) return <div>Laeb...</div>;
-  if (ingredientError || categoryError)
-    return (
-      <div>
-        Tekkis viga: {ingredientError ? ingredientError.message : ""}{" "}
-        {categoryError ? categoryError.message : ""}
-      </div>
-    );
-
   const defaultValues: z.infer<typeof ItemSchema> = initialValues
     ? {
         ...initialValues,
@@ -156,11 +147,19 @@ export default function ItemForm({
         categoryId: "",
         topCategory: "Else",
       };
-
   const form = useForm<z.infer<typeof ItemSchema>>({
     resolver: zodResolver(ItemSchema),
     defaultValues: defaultValues,
   });
+
+  if (ingredientIsLoading || categoryIsLoading) return <div>Laeb...</div>;
+  if (ingredientError || categoryError)
+    return (
+      <div>
+        Tekkis viga: {ingredientError ? ingredientError.message : ""}{" "}
+        {categoryError ? categoryError.message : ""}
+      </div>
+    );
 
   async function onSubmit(values: z.infer<typeof ItemSchema>) {
     //Item update

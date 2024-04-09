@@ -74,9 +74,7 @@ const updateSchema = z
   );
 
 export default function UserForm({ user }: { user: User }) {
-  if (!user) return "";
   const [error, setError] = useState<any>();
-
   const form = useForm<z.infer<typeof updateSchema>>({
     resolver: zodResolver(updateSchema),
     defaultValues: {
@@ -87,6 +85,8 @@ export default function UserForm({ user }: { user: User }) {
       new_password_validate: "",
     },
   });
+
+  if (!user) return "";
 
   async function onSubmit(values: z.infer<typeof updateSchema>) {
     const updatedData: Partial<z.infer<typeof updateSchema>> = {};
