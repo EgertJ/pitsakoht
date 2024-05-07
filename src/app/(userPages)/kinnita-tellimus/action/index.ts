@@ -13,6 +13,10 @@ export async function createOrder(order: OrderType) {
   if (!order.email && !order.name && !order.phone) {
     return { error: "Viga tellija leidmisest, palun proovige uuesti." };
   }
+
+  if (order.items.length === 0) {
+    return { error: "Tellimus ei saa olla tühi." };
+  }
   let orderId = null;
 
   try {
