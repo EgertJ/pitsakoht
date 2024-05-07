@@ -5,23 +5,21 @@ import {
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query";
-import { getOrders } from "@/lib/shared/actions/actions";
+
 import { redirect } from "next/navigation";
 import { validateRequest } from "@/lib/getUser";
+import { getNotDeliveredOrders } from "./action";
 
 export default async function KöökPage() {
   const { user } = await validateRequest();
 
   if (!user || !user.emailVerified || user.role !== "ADMIN") redirect("/");
 
-
   const queryClient = new QueryClient();
   await queryClient.prefetchQuery({
     queryKey: ["orders"],
-    queryFn: () => getOrders(),
+    queryFn: () => getNotDeliveredOrders(),
   });
-
-  
 
   return (
     <div className="bg-black">

@@ -18,11 +18,11 @@ import React, { useEffect, useState } from "react";
 import Container from "./Container";
 import Item from "./Item";
 import { useQuery } from "@tanstack/react-query";
-import { updateOrderStatus } from "../action";
+import { getNotDeliveredOrders, updateOrderStatus } from "../action";
 import DeletionAlert from "./DeletionAlert";
 import { toast } from "sonner";
 import { OrderWithItemsAndAddons } from "@/lib/types";
-import { getOrders } from "@/lib/shared/actions/actions";
+
 type containerType = {
   [name: string]: OrderWithItemsAndAddons[];
 };
@@ -37,7 +37,7 @@ export default function Orders() {
     isLoading: orderIsLoading,
   } = useQuery({
     queryKey: ["orders"],
-    queryFn: () => getOrders(),
+    queryFn: () => getNotDeliveredOrders(),
     refetchInterval: 5000,
     enabled: fetchEnabled,
   });
@@ -56,9 +56,6 @@ export default function Orders() {
     ["Kätte antud"]: [],
   });
 
-
-
-
   useEffect(() => {
     if (orderData && orderData.data) {
       const newOrders = orderData.data;
@@ -76,11 +73,6 @@ export default function Orders() {
       setContainers(newContainers);
     }
   }, [orderData]);
-
-
-
-
-
 
   const sensors = useSensors(
     useSensor(MouseSensor),
