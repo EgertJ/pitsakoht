@@ -65,6 +65,7 @@ CREATE TABLE `Order` (
     `total` INTEGER NOT NULL,
     `takeaway` BOOLEAN NOT NULL,
     `status` ENUM('pending', 'processing', 'completed', 'delivered') NOT NULL,
+    `usedCouponCode` VARCHAR(191) NULL,
     `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
     `updatedAt` DATETIME(3) NOT NULL,
 
@@ -139,6 +140,15 @@ CREATE TABLE `email_verification_code` (
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
 -- CreateTable
+CREATE TABLE `password_reset_token` (
+    `token_hash` VARCHAR(191) NOT NULL,
+    `user_id` VARCHAR(191) NOT NULL,
+    `expires_at` DATETIME(3) NOT NULL,
+
+    UNIQUE INDEX `password_reset_token_token_hash_key`(`token_hash`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
 CREATE TABLE `_UsedCoupons` (
     `A` INTEGER NOT NULL,
     `B` VARCHAR(191) NOT NULL,
@@ -188,6 +198,12 @@ ALTER TABLE `Coupon` ADD CONSTRAINT `Coupon_userId_fkey` FOREIGN KEY (`userId`) 
 
 -- AddForeignKey
 ALTER TABLE `Session` ADD CONSTRAINT `Session_userId_fkey` FOREIGN KEY (`userId`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `email_verification_code` ADD CONSTRAINT `email_verification_code_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `password_reset_token` ADD CONSTRAINT `password_reset_token_user_id_fkey` FOREIGN KEY (`user_id`) REFERENCES `User`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE `_UsedCoupons` ADD CONSTRAINT `_UsedCoupons_A_fkey` FOREIGN KEY (`A`) REFERENCES `Coupon`(`id`) ON DELETE CASCADE ON UPDATE CASCADE;
