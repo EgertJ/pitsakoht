@@ -6,6 +6,10 @@ import { OrderType } from "@/lib/types";
 import { redirect } from "next/navigation";
 
 export async function createOrder(order: OrderType) {
+  if (!order.userId && order.usedCoupon) {
+    return { error: "Ainult kasutaja saab kasutada kupongi!" };
+  }
+
   if (!order.email && !order.name && !order.phone) {
     return { error: "Viga tellija leidmisest, palun proovige uuesti." };
   }
