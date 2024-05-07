@@ -164,6 +164,8 @@ model User {
   hashed_password String
   role     Role @default(USER)
   sessions Session[]
+  email_verification_codes email_verification_code[]
+  password_reset_tokens password_reset_token[]
   orders Order[]
   coupon Coupon[]
   usedCoupons Coupon[] @relation("UsedCoupons")
@@ -180,6 +182,7 @@ model email_verification_code {
   id      Int    @id @default(autoincrement())
   code String
   user_id String @unique
+  user      User     @relation(references: [id], fields: [user_id], onDelete: Cascade)
   email String
   expires_at DateTime
 }
@@ -187,5 +190,6 @@ model email_verification_code {
 model password_reset_token {
   token_hash String @unique
   user_id String
+  user      User     @relation(references: [id], fields: [user_id], onDelete: Cascade)
   expires_at DateTime
 }
