@@ -24,7 +24,6 @@ export default function DeleteConfirmationModal({
 }: DeleteConfirmationModalProps) {
   return (
     <AlertDialog open={open} onOpenChange={(e) => setOpen(e)}>
-      <AlertDialogTrigger>Kustuta</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
