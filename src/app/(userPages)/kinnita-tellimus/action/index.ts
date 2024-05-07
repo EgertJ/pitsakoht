@@ -6,7 +6,7 @@ import { OrderType } from "@/lib/types";
 import { redirect } from "next/navigation";
 
 export async function createOrder(order: OrderType) {
-  if (order.userId === null || (!order.email && !order.name && !order.phone)) {
+  if (!order.email && !order.name && !order.phone) {
     return { error: "Viga tellija leidmisest, palun proovige uuesti." };
   }
   let orderId = null;
