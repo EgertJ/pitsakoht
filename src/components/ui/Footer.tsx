@@ -70,13 +70,16 @@ export default function Footer() {
             </a>
           </div>
           <div className="flex gap-10 justify-normal md:justify-between">
-            <a href="https://www.facebook.com/Pitsakoht">
+            <a href="https://www.facebook.com/Pitsakoht" aria-label="Facebook">
               <FaFacebook size={30}></FaFacebook>
             </a>
-            <a href="https://www.instagram.com/pitsakoht/">
+            <a
+              href="https://www.instagram.com/pitsakoht/"
+              aria-label="Instagram"
+            >
               <FaInstagram size={30}></FaInstagram>
             </a>
-            <a href="https://www.tiktok.com/@pitsakoht">
+            <a href="https://www.tiktok.com/@pitsakoht" aria-label="Tiktok">
               <FaTiktok size={30}></FaTiktok>
             </a>
           </div>

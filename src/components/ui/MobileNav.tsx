@@ -16,7 +16,7 @@ export default function MobileNav({ user }: { user: User | null }) {
   return (
     <>
       <div className="lg:hidden absolute right-10 top-14">
-        <button onClick={toggleMenu}>
+        <button onClick={toggleMenu} aria-label="menüü-toggle">
           <span className="block w-6 h-0.5 bg-black mb-1"></span>
           <span className="block w-6 h-0.5 bg-black mb-1"></span>
           <span className="block w-6 h-0.5 bg-black"></span>
