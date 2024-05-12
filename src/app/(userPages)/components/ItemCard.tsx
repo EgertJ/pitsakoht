@@ -34,13 +34,15 @@ export interface ItemParams {
 export default function ItemCard(params: ItemParams) {
   return (
     <Card className="w-full h-full border-none">
-      <CardHeader className="p-0 h-56 relative bg-gray-100">
+      <CardHeader
+        className={`p-0 h-56 relative ${params.itemImage ? "" : "bg-gray-100"}`}
+      >
         {params.itemImage && (
           <Image
             src={params.itemImage}
             fill={true}
             alt={params.itemName}
-            className="object-cover"
+            className="object-contain"
             sizes="(min-width: 768px) 50vw, 100vw"
           ></Image>
         )}
