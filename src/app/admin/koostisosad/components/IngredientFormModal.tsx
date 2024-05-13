@@ -193,7 +193,7 @@ export default function IngredientFormModal({
                 )}
               ></FormField>
               <Button type="submit">
-                {initialValues ? "Uuenda toode" : "Lisa toode"}
+                {initialValues ? "Uuenda koostiosa" : "Lisa koostisosa"}
               </Button>
             </form>
           </Form>

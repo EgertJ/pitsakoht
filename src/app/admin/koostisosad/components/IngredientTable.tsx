@@ -145,7 +145,7 @@ export default function IngredientTable() {
       ></DeleteConfirmationModal>
 
       <div className="flex justify-end pb-2">
-        <Button onClick={() => setOpenUpdateModal(true)}>Lisa toode</Button>
+        <Button onClick={() => setOpenUpdateModal(true)}>Lisa koostiosa</Button>
         <IngredientFormModal
           initialValues={initialValues ? initialValues : undefined}
           id={initialValues ? activeItem : undefined}

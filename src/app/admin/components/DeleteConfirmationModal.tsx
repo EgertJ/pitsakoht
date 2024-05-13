@@ -27,7 +27,7 @@ export default function DeleteConfirmationModal({
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>
-            Kindel, et soovid seda kustututada?
+            Kindel, et soovid seda kustutada?
           </AlertDialogTitle>
           <AlertDialogDescription>
             Seda ei saa tagasi võtta. See kirje kustutatakse andmebaasist
