@@ -1,8 +1,27 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+This is the repository for "A website for Omare OÜ," a Next.js application developed as part of a thesis project. This project aims to create a comprehensive website for Omare OÜ, providing an online pizza ordering system.
 
 ## Getting Started
 
-First, run the development server:
+To get started with the development server, follow these steps:
+
+1. Clone the repository
+```bash
+git clone https://github.com/EgertJ/pitsakoht.git
+cd pitsakoht
+```
+
+2. Install dependecies
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+# or
+bun install
+```
+
+3. Run the development server:
 
 ```bash
 npm run dev
@@ -20,17 +39,33 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-## Learn More
+## Project Overview
 
-To learn more about Next.js, take a look at the following resources:
+"A website for Omare OÜ" is designed to achieve the following:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+* Pizza Ordering: Allow customers to order pizzas online through an integrated ordering system.
+* Contact Information: Enable potential clients to get in touch easily through a contact page.
+* Responsive Design: Ensure the website is accessible on all devices.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## Pizza Ordering Functionality
 
-## Deploy on Vercel
+The website includes a user-friendly pizza ordering system where customers can:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+* Browse the menu.
+* Customize their pizza with various toppings.
+* Place orders online.
+* Receive confirmation and delivery status.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Contributing
+
+If you would like to contribute to this project, please follow these guidelines:
+
+* Fork the repository.
+* Create a new branch (git checkout -b feature-branch).
+* Make your changes.
+* Commit your changes (git commit -m 'Add new feature').
+* Push to the branch (git push origin feature-branch).
+* Open a pull request.
+
+## License
+* This project is licensed under the MIT License. See the LICENSE file for details.
