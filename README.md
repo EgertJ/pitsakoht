@@ -21,7 +21,30 @@ pnpm install
 bun install
 ```
 
-3. Run the development server:
+3. Create a SQL database
+Set up a new SQL database and note down the connection string.
+
+4. Configure the database
+Create a .env file in the root of your project and add your database connection string:
+
+```bash
+DATABASE_URL="your-database-connection-string"
+```
+5. Generate Prisma client
+Run the following command to generate the Prisma client:
+
+```bash
+npx prisma generate
+```
+
+6. Apply migrations
+Apply the database migrations to set up your schema:
+
+```bash
+npx prisma migrate dev
+```
+
+7. Run the development server:
 
 ```bash
 npm run dev
