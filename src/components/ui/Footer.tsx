@@ -31,14 +31,6 @@ export default function Footer() {
             <Link href="/kontakt" className="underline">
               Kontakt
             </Link>
-
-            <Link href="/logi-sisse" className="underline">
-              Logi sisse
-            </Link>
-
-            <Link href="/registreeru" className="underline">
-              Registreeru
-            </Link>
           </div>
         </div>
         <div className="flex flex-col gap-8 w-full md:w-fit">
@@ -86,9 +78,6 @@ export default function Footer() {
         </div>
       </div>
       <div className="flex flex-col md:items-center w-full md:flex-grow-0 mt-10">
-        <Link href="/privaatsuspoliitika" className="underline">
-          Privaatsuspoliitika
-        </Link>
         <p className=" mt-2">© 2023 Pitsakoht | Kõik õigused kaitstud</p>
       </div>
     </footer>

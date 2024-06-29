@@ -6,9 +6,7 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import Image from "next/image";
-import PizzaMaking from "@/components/ui/PizzaMaking";
 import { IngredientCategory, Sizes, TopCategory } from "@prisma/client";
-import AddToCart from "./AddToCart";
 
 export interface ItemParams {
   itemCategory: TopCategory;
@@ -66,18 +64,6 @@ export default function ItemCard(params: ItemParams) {
             ""
           )}
         </p>
-        {params.itemCategory === "Pizza" && (
-          <PizzaMaking
-            params={params}
-            cartItem={undefined}
-            triggerText="Vali"
-            buttonStyle="w-1/2"
-          />
-        )}
-
-        {params.itemCategory === "Else" && (
-          <AddToCart item={params}></AddToCart>
-        )}
       </CardFooter>
     </Card>
   );

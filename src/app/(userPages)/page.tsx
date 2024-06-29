@@ -5,7 +5,6 @@ import {
   HydrationBoundary,
   QueryClient,
 } from "@tanstack/react-query";
-import ShoppingCartButton from "@/components/ui/ShoppingCartButton";
 import { getCategories } from "./action";
 import { validateRequest } from "@/lib/getUser";
 import { redirect } from "next/navigation";
@@ -26,7 +25,6 @@ export default async function Home() {
       <HydrationBoundary state={dehydrate(queryClient)}>
         <Hero />
         <Menu />
-        <ShoppingCartButton />
       </HydrationBoundary>
     </main>
   );
