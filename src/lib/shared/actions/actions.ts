@@ -25,7 +25,6 @@ const email_secure = Boolean(process.env.EMAIL_SECURE);
 const email_service = process.env.SMTP_SERVICE;
 
 const transporter = nodemailer.createTransport({
-  service: email_service,
   host: email_host,
   port: email_port,
   secure: email_secure,

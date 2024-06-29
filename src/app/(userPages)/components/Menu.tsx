@@ -25,7 +25,7 @@ export default function Menu() {
       <div>
         <p className="text-3xl font-bold  flex justify-center md:block flex-wrap">
           Vali endale midagi&nbsp;
-          <span className="text-red-500">meelepärast</span>
+          <span className="text-primary">meelepärast</span>
         </p>
       </div>
       <div className="flex gap-2 flex-wrap justify-center md:justify-normal py-8 sticky top-0 z-50 bg-white ">
