@@ -29,7 +29,8 @@ export async function updateItem(
 ) {
   const { user } = await validateRequest();
 
-  if (!user || !user.emailVerified || user.role !== "ADMIN") return { error: "Pole lubatud!" };
+  if (!user || !user.emailVerified || user.role !== "ADMIN")
+    return { error: "Pole lubatud!" };
 
   const result = UpdateItemSchema.safeParse(updatedItems);
 
@@ -90,7 +91,7 @@ export async function updateItem(
         result.data.discountPrice !== undefined
           ? Number(result.data.discountPrice)
           : result.data.discountPrice,
-      image: savedImagePath,
+      image: savedImagePath == null ? undefined : savedImagePath,
     };
 
     // Update incredients if they exist
