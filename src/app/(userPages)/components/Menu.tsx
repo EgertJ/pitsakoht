@@ -58,6 +58,7 @@ export default function Menu() {
                       whileInView={"enter"}
                       viewport={{ once: true }}
                       transition={{ delay: 0.2 }}
+                      className="h-full"
                     >
                       <ItemCard
                         itemCategory={item.topCategory}
