@@ -42,6 +42,7 @@ export default function ContactForm() {
   async function onSubmit(values: z.infer<typeof contactSchema>) {
     const sendEmail = await sendContactMail({ data: values });
 
+    if (sendEmail && sendEmail.message) toast.success("Teade saadetud!");
     if (sendEmail && sendEmail.error) toast.error(sendEmail.error);
     console.log(values);
   }
