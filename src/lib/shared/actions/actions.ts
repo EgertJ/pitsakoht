@@ -14,7 +14,12 @@ import { generateRandomString, alphabet, sha256 } from "oslo/crypto";
 import { ActionResult } from "next/dist/server/app-render/types";
 import nodemailer from "nodemailer";
 
-import { loginSchema, registerSchema, codeSchema } from "@/lib/types";
+import {
+  loginSchema,
+  registerSchema,
+  codeSchema,
+  contactSchema,
+} from "@/lib/types";
 import { validateRequest } from "@/lib/getUser";
 
 const email = process.env.EMAIL;
@@ -25,6 +30,7 @@ const email_secure = Boolean(process.env.EMAIL_SECURE);
 const email_service = process.env.SMTP_SERVICE;
 
 const transporter = nodemailer.createTransport({
+  service: email_service,
   host: email_host,
   port: email_port,
   secure: email_secure,
@@ -33,6 +39,29 @@ const transporter = nodemailer.createTransport({
     pass: password,
   },
 });
+
+export async function sendContactMail({
+  data,
+}: {
+  data: z.infer<typeof contactSchema>;
+}) {
+  const text = `Email: ${data.email}\n\nNimi: ${data.name}\n\nKiri: ${data.message}`;
+  try {
+    const mailOptions: Object = {
+      from: email,
+      to: "Omare.oy@outlook.com",
+      subject: "Kiri veebilehelt",
+      text: text,
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    return { message: "Meil saadetud" };
+  } catch (e) {
+    console.error(e);
+    return { error: "Viga kirja saatmisel." };
+  }
+}
 
 export async function sendVertificationEmail(
   sendEmail: string,
@@ -46,7 +75,7 @@ export async function sendVertificationEmail(
       text: verificationCode,
     };
 
-    const info = await transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailOptions);
 
     return { message: "Meil saadetud" };
   } catch (e) {

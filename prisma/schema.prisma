@@ -26,13 +26,6 @@ enum Sizes {
   l
 }
 
-enum OrderStatus {
-  pending
-  processing
-  completed
-  delivered
-}
-
 enum IngredientCategory {
   topping
   sauce
@@ -48,8 +41,6 @@ model Item {
   incredients ItemIngredient[]
   addons ItemAddon[]
   sizes Size[]
-  orders OrderItem[]
-  coupon Coupon[]
   categoryId Int 
   category Category @relation(fields: [categoryId], references: [id])
   topCategory TopCategory
@@ -85,7 +76,6 @@ model ItemAddon {
   ingredientId Int
   item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
   ingredient Ingredient @relation(fields: [ingredientId], references: [id],  onDelete: Cascade)
-  orderItemAddons OrderItemAddon[]
 
   @@id([itemId, ingredientId])
 }
@@ -102,60 +92,6 @@ model Size {
 }
 
 
-
-model Order {
-  id String @id
-  userId String?
-  user User? @relation(fields: [userId], references: [id],  onDelete: Cascade)
-  email String?
-  name String?
-  phone String?
-  total Int
-  takeaway Boolean
-  status OrderStatus
-  items    OrderItem[]
-  usedCouponCode String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-
-model OrderItem {
-  id        Int      @id @default(autoincrement())
-  orderId String
-  order Order @relation(fields: [orderId], references: [id],  onDelete: Cascade)
-  itemId Int
-  item Item @relation(fields: [itemId], references: [id],  onDelete: Cascade)
-  size Sizes?
-  quantity Int
-  addons OrderItemAddon[]
-  
-}
-
-model OrderItemAddon {
-  orderItemId Int
-  orderItem   OrderItem @relation(fields: [orderItemId], references: [id],  onDelete: Cascade)
-  itemId Int
-  ingredientId Int
-  itemAddon   ItemAddon @relation(fields: [itemId, ingredientId], references: [itemId, ingredientId],  onDelete: Cascade)
-  quantity Int
-
-  @@id([orderItemId, itemId, ingredientId])
-}
-
-model Coupon {
-  id Int @id @default(autoincrement())
-  code String @unique
-  discount Int
-  itemId Int?
-  userId String?
-  item Item? @relation(fields: [itemId], references: [id], onDelete: Cascade)
-  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
-  usedBy User[] @relation("UsedCoupons")
-}
-
-
-
 model User {
   id       String    @id
   email    String @unique
@@ -166,9 +102,6 @@ model User {
   sessions Session[]
   email_verification_codes email_verification_code[]
   password_reset_tokens password_reset_token[]
-  orders Order[]
-  coupon Coupon[]
-  usedCoupons Coupon[] @relation("UsedCoupons")
 }
 
 model Session {

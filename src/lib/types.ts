@@ -1,8 +1,6 @@
-import { ItemParams } from "@/app/(userPages)/components/ItemCard";
 import {
   Ingredient,
   IngredientCategory,
-  OrderStatus,
   Prisma,
   Role,
   Size,
@@ -162,7 +160,7 @@ export const updateSchema = z
   )
   .optional();
 
-  export const reset_password_schema = z
+export const reset_password_schema = z
   .object({
     new_password: z
       .string()
@@ -202,66 +200,19 @@ export const updateSchema = z
     }
   );
 
-  export const forgotPasswordSchema = z.object({
-    email: z.string().email("See ei ole õige e-mail."),
-    
-  });
+export const forgotPasswordSchema = z.object({
+  email: z.string().email("See ei ole õige e-mail."),
+});
 
-export const CouponSchema = z
-  .object({
-    code: z.string().min(1, { message: "Kood on vajalik" }),
-    discount: z.number(),
-    itemId: z.number().nullable().optional(),
-    userId: z.string().nullable().optional(),
-  })
-  .transform((data) => ({
-    ...data,
-    discount:
-      typeof data.discount === "string"
-        ? parseFloat(data.discount)
-        : data.discount,
-  }))
-  .refine((data) => typeof data.discount == "number" || !isNaN(data.discount), {
-    message: "Soodustus peab olema number.",
-    path: ["discount"],
-  })
-  .refine((data) => data.discount >= 0 && data.discount <= 100, {
-    message: "Soodustus peab olema protsent (0-100).",
-    path: ["discount"],
-  })
-  .refine((data) => data.userId !== undefined || data.itemId !== undefined, {
-    message: "Seotud kasutaja peab olema, kui seotud toodet pole.",
-    path: ["userId"],
-  })
-  .refine((data) => data.itemId !== undefined || data.userId !== undefined, {
-    message: "Seotud toode peab olema, kui seotud kasutajat pole.",
-    path: ["itemId"],
-  });
-
-export const UpdateCouponSchema = z
-  .object({
-    code: z.string().min(1, { message: "Kood on vajalik" }).optional(),
-    discount: z.number().optional(),
-    itemId: z.number().nullable().optional(),
-    userId: z.string().nullable().optional(),
-  })
-  .transform((data) => ({
-    ...data,
-    discount:
-      typeof data.discount === "string"
-        ? parseFloat(data.discount)
-        : data.discount,
-  }))
-  .refine(
-    (data) =>
-      typeof data.discount === "undefined" ||
-      typeof data.discount == "number" ||
-      !isNaN(data.discount),
-    {
-      message: "Soodustus peab olema number.",
-      path: ["discount"],
-    }
-  );
+export const contactSchema = z.object({
+  name: z.string().min(1, {
+    message: "Nimi on vajalik.",
+  }),
+  email: z.string().email("See ei ole õige e-mail."),
+  message: z.string().min(1, {
+    message: "Sõnum ei tohi olla tühi.",
+  }),
+});
 
 export type AddonType = {
   addonId: number;
@@ -271,47 +222,6 @@ export type AddonType = {
   addonCount: number;
   addonCategory: IngredientCategory;
 };
-
-export type CartItem = {
-  id: number;
-  item: ItemParams;
-  price: number;
-  quantity: number;
-  size:
-    | {
-        size: Sizes;
-        price: number;
-      }
-    | undefined;
-  addons: AddonType[];
-};
-
-export type OrderType = {
-  userId: string | null;
-  email: string | null;
-  name: string | null;
-  phone: string | null;
-  total: number;
-  status: OrderStatus;
-  items: CartItem[];
-  takeaway: boolean;
-  usedCoupon: string | null;
-};
-
-export type OrderWithItemsAndAddons = Prisma.OrderGetPayload<{
-  include: {
-    items: {
-      include: {
-        item: true;
-        addons: {
-          include: {
-            itemAddon: { include: { ingredient: true } };
-          };
-        };
-      };
-    };
-  };
-}>;
 
 export type ItemWithSizesIngredientsAndAddons = Prisma.ItemGetPayload<{
   include: {

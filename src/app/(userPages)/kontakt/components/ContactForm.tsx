@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { sendContactMail } from "@/lib/shared/actions/actions";
+import { toast } from "sonner";
 
 const contactSchema = z.object({
   name: z.string().min(1, {
@@ -37,7 +39,10 @@ export default function ContactForm() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof contactSchema>) {
+  async function onSubmit(values: z.infer<typeof contactSchema>) {
+    const sendEmail = await sendContactMail({ data: values });
+
+    if (sendEmail && sendEmail.error) toast.error(sendEmail.error);
     console.log(values);
   }
 
